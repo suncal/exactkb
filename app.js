@@ -7,30 +7,60 @@
   // Base URL of the app assets (works from / and from /landing-page/ dirs)
   const BASE = new URL(".", document.currentScript.src).href;
 
-  let heicLoader = null;
-  function loadHeicLib() {
-    if (window.heic2any) return Promise.resolve();
-    if (!heicLoader) {
-      heicLoader = new Promise((resolve, reject) => {
+  const scriptLoaders = {};
+  function loadScriptOnce(path) {
+    if (!scriptLoaders[path]) {
+      scriptLoaders[path] = new Promise((resolve, reject) => {
         const s = document.createElement("script");
-        s.src = BASE + "vendor/heic2any.min.js";
+        s.src = BASE + path;
         s.onload = resolve;
-        s.onerror = () => reject(new Error("Could not load the HEIC converter."));
+        s.onerror = () => reject(new Error("Could not load " + path));
         document.head.appendChild(s);
       });
     }
-    return heicLoader;
+    return scriptLoaders[path];
   }
 
   function isHeic(file) {
     return /image\/hei[cf]/.test(file.type) || /\.hei[cf]$/i.test(file.name);
   }
 
-  async function heicToJpeg(file) {
-    await loadHeicLib();
+  // Primary HEIC decoder: current libheif (handles new iPhone HDR/10-bit files).
+  async function heicViaLibheif(file) {
+    await loadScriptOnce("vendor/libheif-bundle.js");
+    let lib = window.libheif;
+    if (typeof lib === "function") lib = await lib();      // factory variant
+    if (lib && typeof lib.then === "function") lib = await lib; // promise variant
+    const decoder = new lib.HeifDecoder();
+    const images = decoder.decode(new Uint8Array(await file.arrayBuffer()));
+    if (!images || !images.length) throw new Error("no image in HEIC container");
+    const img = images[0];
+    const w = img.get_width(), h = img.get_height();
+    const canvas = document.createElement("canvas");
+    canvas.width = w; canvas.height = h;
+    const ctx = canvas.getContext("2d");
+    const imageData = ctx.createImageData(w, h);
+    await new Promise((resolve, reject) => {
+      img.display(imageData, (ok) => (ok ? resolve() : reject(new Error("libheif display failed"))));
+    });
+    ctx.putImageData(imageData, 0, 0);
+    images.forEach((i) => { try { i.free(); } catch (_) {} });
+    const blob = await new Promise((r) => canvas.toBlob(r, "image/jpeg", 0.92));
+    return new File([blob], file.name.replace(/\.[^.]+$/, "") + ".jpg", { type: "image/jpeg" });
+  }
+
+  // Secondary HEIC decoder: heic2any (older libheif, kept as fallback).
+  async function heicViaHeic2any(file) {
+    await loadScriptOnce("vendor/heic2any.min.js");
     const blob = await window.heic2any({ blob: file, toType: "image/jpeg", quality: 0.92 });
     const jpeg = Array.isArray(blob) ? blob[0] : blob;
     return new File([jpeg], file.name.replace(/\.[^.]+$/, "") + ".jpg", { type: "image/jpeg" });
+  }
+
+  async function heicToJpeg(file) {
+    try { return await heicViaLibheif(file); }
+    catch (e) { console.warn("libheif decode failed, trying heic2any:", e); }
+    return heicViaHeic2any(file);
   }
 
   const els = {
