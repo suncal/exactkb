@@ -6,7 +6,7 @@
   <title>Compress PDF to 100 KB Online — Free, Exact &amp; Private</title>
   <meta name="description" content="Get any PDF under 100 KB for strict upload portals. Exact targeting, in-browser, documents never uploaded.">
   <link rel="canonical" href="https://suncal.github.io/exactkb/compress-pdf-to-100kb/">
-  <link rel="stylesheet" href="../style.css?v=6">
+  <link rel="stylesheet" href="../style.css?v=7">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🎯</text></svg>">
   <meta property="og:title" content="Compress PDF to 100 KB Online — Free, Exact &amp; Private">
   <meta property="og:description" content="Get any PDF under 100 KB for strict upload portals. Exact targeting, in-browser, documents never uploaded.">
@@ -32,6 +32,7 @@
     </section>
 
     <section class="tool" id="tool">
+      <div class="step-label"><span class="n">1</span> Set your limit</div>
       <div class="controls">
         <div class="field full">
           <label for="max-kb">Max size (KB) *</label>
@@ -39,12 +40,15 @@
         </div>
       </div>
 
+      <div class="step-label"><span class="n">2</span> Add your PDFs</div>
       <div class="drop" id="drop" role="button" tabindex="0" aria-label="Choose or drop PDF files">
         <div class="big">📄</div>
         <div class="main">Drop PDFs here or click to choose</div>
         <div class="hint">Up to 60 pages per file · multiple files OK · nothing is uploaded</div>
       </div>
       <input type="file" id="file-input" accept="application/pdf,.pdf" multiple hidden>
+      <div class="queue" id="queue"></div>
+      <button class="btn-go" id="go" type="button" disabled>Compress →</button>
 
       <div id="results-section">
         <h2>Your files</h2>
@@ -78,6 +82,6 @@
   </footer>
 
   <script>window.PDF_PRESET = {"maxKB": 100};</script>
-  <script src="../pdf-app.js?v=6"></script>
+  <script src="../pdf-app.js?v=7"></script>
 </body>
 </html>

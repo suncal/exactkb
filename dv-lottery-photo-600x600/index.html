@@ -6,7 +6,7 @@
   <title>DV Lottery Photo Resize — 600×600 JPEG Under 240 KB, Free &amp; Private</title>
   <meta name="description" content="Green Card lottery photo to spec in one click: exactly 600×600 px JPEG under 240 KB. In-browser and private.">
   <link rel="canonical" href="https://suncal.github.io/exactkb/dv-lottery-photo-600x600/">
-  <link rel="stylesheet" href="../style.css?v=6">
+  <link rel="stylesheet" href="../style.css?v=7">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🎯</text></svg>">
   <meta property="og:title" content="DV Lottery Photo Resize — 600×600 JPEG Under 240 KB, Free &amp; Private">
   <meta property="og:description" content="Green Card lottery photo to spec in one click: exactly 600×600 px JPEG under 240 KB. In-browser and private.">
@@ -32,6 +32,7 @@
     </section>
 
     <section class="tool" id="tool">
+      <div class="step-label"><span class="n">1</span> Set your target</div>
       <div class="controls">
         <div class="field">
           <label for="country">Country / region</label>
@@ -70,12 +71,15 @@
         <p id="preset-note"></p>
       </div>
 
+      <div class="step-label"><span class="n">2</span> Add your files</div>
       <div class="drop" id="drop" role="button" tabindex="0" aria-label="Choose or drop images">
         <div class="big">📸</div>
         <div class="main">Drop images here, paste, or click to choose</div>
-        <div class="hint">JPG, PNG, WebP, GIF, BMP · multiple files OK · nothing is uploaded</div>
+        <div class="hint">JPG · PNG · HEIC (iPhone) · WebP · GIF · BMP — multiple files OK · nothing is uploaded</div>
       </div>
-      <input type="file" id="file-input" accept="image/*" multiple hidden>
+      <input type="file" id="file-input" accept="image/*,.heic,.heif,.avif,.svg" multiple hidden>
+      <div class="queue" id="queue"></div>
+      <button class="btn-go" id="go" type="button" disabled>Compress →</button>
 
       <div id="results-section">
         <h2>Your files</h2>
@@ -124,7 +128,7 @@
   </footer>
 
   <script>window.PAGE_PRESET = {"id": "us-dv-lottery", "country": "us", "minKB": null, "maxKB": 240, "width": 600, "height": 600, "format": "jpeg"};</script>
-  <script src="../presets.js?v=6"></script>
-  <script src="../app.js?v=6"></script>
+  <script src="../presets.js?v=7"></script>
+  <script src="../app.js?v=7"></script>
 </body>
 </html>

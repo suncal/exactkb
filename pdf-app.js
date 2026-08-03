@@ -14,7 +14,37 @@
     maxKB: $("#max-kb"),
     results: $("#results"),
     resultsSection: $("#results-section"),
+    queue: $("#queue"),
+    go: $("#go"),
   };
+
+  // ---------- file queue (nothing runs until the button is pressed) ----------
+  const pending = [];
+  function renderQueue() {
+    if (!els.queue || !els.go) return;
+    els.queue.innerHTML = "";
+    pending.forEach((f, idx) => {
+      const item = document.createElement("div");
+      item.className = "queue-item";
+      item.innerHTML = `<div class="queue-thumb">📄</div><div class="queue-body"><div class="queue-name"></div><div class="queue-size"></div></div>`;
+      item.querySelector(".queue-name").textContent = f.name;
+      item.querySelector(".queue-size").textContent = fmtKB(f.size);
+      const rm = document.createElement("button");
+      rm.className = "queue-remove";
+      rm.type = "button";
+      rm.setAttribute("aria-label", "Remove " + f.name);
+      rm.textContent = "✕";
+      rm.addEventListener("click", () => { pending.splice(idx, 1); renderQueue(); });
+      item.appendChild(rm);
+      els.queue.appendChild(item);
+    });
+    els.queue.style.display = pending.length ? "flex" : "none";
+    els.go.disabled = pending.length === 0;
+    els.go.textContent = pending.length
+      ? `Compress ${pending.length} PDF${pending.length > 1 ? "s" : ""} →`
+      : "Compress →";
+  }
+  function queueFiles(files) { pending.push(...files); renderQueue(); }
 
   // ---------- lazy lib loading ----------
   let libsPromise = null;
@@ -47,9 +77,17 @@
       if (e.key === "Enter" || e.key === " ") { e.preventDefault(); els.fileInput.click(); }
     });
     els.fileInput.addEventListener("change", () => {
-      if (els.fileInput.files.length) handleFiles([...els.fileInput.files]);
+      if (els.fileInput.files.length) queueFiles([...els.fileInput.files]);
       els.fileInput.value = "";
     });
+    if (els.go) {
+      els.go.addEventListener("click", () => {
+        if (!pending.length) return;
+        const files = pending.splice(0);
+        renderQueue();
+        handleFiles(files);
+      });
+    }
     ["dragenter", "dragover"].forEach((ev) =>
       drop.addEventListener(ev, (e) => { e.preventDefault(); drop.classList.add("over"); })
     );
@@ -58,7 +96,7 @@
     );
     drop.addEventListener("drop", (e) => {
       const files = [...(e.dataTransfer?.files || [])];
-      if (files.length) handleFiles(files);
+      if (files.length) queueFiles(files);
     });
   }
 

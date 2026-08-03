@@ -438,7 +438,7 @@ def render_pdf(slug, p):
   <title>{html.escape(p["title"])}</title>
   <meta name="description" content="{html.escape(p["desc"])}">
   <link rel="canonical" href="{BASE_URL}/{slug}/">
-  <link rel="stylesheet" href="../style.css?v=6">
+  <link rel="stylesheet" href="../style.css?v=7">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🎯</text></svg>">
   <meta property="og:title" content="{html.escape(p["title"])}">
   <meta property="og:description" content="{html.escape(p["desc"])}">
@@ -464,6 +464,7 @@ def render_pdf(slug, p):
     </section>
 
     <section class="tool" id="tool">
+      <div class="step-label"><span class="n">1</span> Set your limit</div>
       <div class="controls">
         <div class="field full">
           <label for="max-kb">Max size (KB) *</label>
@@ -471,12 +472,15 @@ def render_pdf(slug, p):
         </div>
       </div>
 
+      <div class="step-label"><span class="n">2</span> Add your PDFs</div>
       <div class="drop" id="drop" role="button" tabindex="0" aria-label="Choose or drop PDF files">
         <div class="big">📄</div>
         <div class="main">Drop PDFs here or click to choose</div>
         <div class="hint">Up to 60 pages per file · multiple files OK · nothing is uploaded</div>
       </div>
       <input type="file" id="file-input" accept="application/pdf,.pdf" multiple hidden>
+      <div class="queue" id="queue"></div>
+      <button class="btn-go" id="go" type="button" disabled>Compress →</button>
 
       <div id="results-section">
         <h2>Your files</h2>
@@ -507,7 +511,7 @@ def render_pdf(slug, p):
   </footer>
 
   <script>window.PDF_PRESET = {preset_json};</script>
-  <script src="../pdf-app.js?v=6"></script>
+  <script src="../pdf-app.js?v=7"></script>
 </body>
 </html>
 """
@@ -531,7 +535,7 @@ def render(slug, p):
   <title>{html.escape(p["title"])}</title>
   <meta name="description" content="{html.escape(p["desc"])}">
   <link rel="canonical" href="{BASE_URL}/{slug}/">
-  <link rel="stylesheet" href="../style.css?v=6">
+  <link rel="stylesheet" href="../style.css?v=7">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🎯</text></svg>">
   <meta property="og:title" content="{html.escape(p["title"])}">
   <meta property="og:description" content="{html.escape(p["desc"])}">
@@ -557,6 +561,7 @@ def render(slug, p):
     </section>
 
     <section class="tool" id="tool">
+      <div class="step-label"><span class="n">1</span> Set your target</div>
       <div class="controls">
         <div class="field">
           <label for="country">Country / region</label>
@@ -595,12 +600,15 @@ def render(slug, p):
         <p id="preset-note"></p>
       </div>
 
+      <div class="step-label"><span class="n">2</span> Add your files</div>
       <div class="drop" id="drop" role="button" tabindex="0" aria-label="Choose or drop images">
         <div class="big">📸</div>
         <div class="main">Drop images here, paste, or click to choose</div>
-        <div class="hint">JPG, PNG, WebP, GIF, BMP · multiple files OK · nothing is uploaded</div>
+        <div class="hint">JPG · PNG · HEIC (iPhone) · WebP · GIF · BMP — multiple files OK · nothing is uploaded</div>
       </div>
-      <input type="file" id="file-input" accept="image/*" multiple hidden>
+      <input type="file" id="file-input" accept="image/*,.heic,.heif,.avif,.svg" multiple hidden>
+      <div class="queue" id="queue"></div>
+      <button class="btn-go" id="go" type="button" disabled>Compress →</button>
 
       <div id="results-section">
         <h2>Your files</h2>
@@ -640,8 +648,8 @@ def render(slug, p):
   </footer>
 
   <script>window.PAGE_PRESET = {preset_json};</script>
-  <script src="../presets.js?v=6"></script>
-  <script src="../app.js?v=6"></script>
+  <script src="../presets.js?v=7"></script>
+  <script src="../app.js?v=7"></script>
 </body>
 </html>
 """

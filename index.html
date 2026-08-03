@@ -6,7 +6,7 @@
   <title>ExactKB — Compress Images to an Exact KB Size, Free &amp; Private</title>
   <meta name="description" content="Compress and resize any photo to the exact KB size an upload form demands — 20KB, 50KB, 200KB, anything. Country-specific presets for visa, passport and exam portals worldwide. 100% in your browser, files never uploaded.">
   <link rel="canonical" href="https://suncal.github.io/exactkb/">
-  <link rel="stylesheet" href="style.css?v=6">
+  <link rel="stylesheet" href="style.css?v=7">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🎯</text></svg>">
   <meta property="og:title" content="ExactKB — Compress Images to an Exact KB Size">
   <meta property="og:description" content="Fit any photo or PDF to the exact size an upload form demands. Free, private, in-browser.">
@@ -51,6 +51,7 @@
     </section>
 
     <section class="tool" id="tool">
+      <div class="step-label"><span class="n">1</span> Set your target</div>
       <div class="controls">
         <div class="field">
           <label for="country">Country / region</label>
@@ -89,12 +90,15 @@
         <p id="preset-note"></p>
       </div>
 
+      <div class="step-label"><span class="n">2</span> Add your files</div>
       <div class="drop" id="drop" role="button" tabindex="0" aria-label="Choose or drop images">
         <div class="big">📸</div>
         <div class="main">Drop images here, paste, or click to choose</div>
         <div class="hint">JPG · PNG · HEIC (iPhone) · WebP · AVIF · SVG · GIF · BMP — multiple files OK · <a href="compress-pdf/">need a PDF instead?</a></div>
       </div>
       <input type="file" id="file-input" accept="image/*,.heic,.heif,.avif,.svg" multiple hidden>
+      <div class="queue" id="queue"></div>
+      <button class="btn-go" id="go" type="button" disabled>Compress →</button>
 
       <div id="results-section">
         <h2>Your files</h2>
@@ -227,7 +231,7 @@
     </div>
   </footer>
 
-  <script src="presets.js?v=6"></script>
-  <script src="app.js?v=6"></script>
+  <script src="presets.js?v=7"></script>
+  <script src="app.js?v=7"></script>
 </body>
 </html>

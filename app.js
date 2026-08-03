@@ -76,7 +76,62 @@
     presetNote: $("#preset-note"),
     results: $("#results"),
     resultsSection: $("#results-section"),
+    queue: $("#queue"),
+    go: $("#go"),
   };
+
+  // ---------- file queue (nothing runs until the button is pressed) ----------
+  const pending = [];
+
+  function renderQueue() {
+    if (!els.queue || !els.go) return;
+    els.queue.innerHTML = "";
+    pending.forEach((f, idx) => {
+      const item = document.createElement("div");
+      item.className = "queue-item";
+      const thumb = document.createElement("div");
+      thumb.className = "queue-thumb";
+      if (f._url) {
+        const img = document.createElement("img");
+        img.src = f._url; img.alt = "";
+        thumb.appendChild(img);
+      } else {
+        thumb.textContent = "🖼";
+      }
+      const body = document.createElement("div");
+      body.className = "queue-body";
+      body.innerHTML = `<div class="queue-name"></div><div class="queue-size"></div>`;
+      body.querySelector(".queue-name").textContent = f.name;
+      body.querySelector(".queue-size").textContent = fmtKB(f.size);
+      const rm = document.createElement("button");
+      rm.className = "queue-remove";
+      rm.type = "button";
+      rm.setAttribute("aria-label", "Remove " + f.name);
+      rm.textContent = "✕";
+      rm.addEventListener("click", () => {
+        if (f._url) URL.revokeObjectURL(f._url);
+        pending.splice(idx, 1);
+        renderQueue();
+      });
+      item.append(thumb, body, rm);
+      els.queue.appendChild(item);
+    });
+    els.queue.style.display = pending.length ? "flex" : "none";
+    els.go.disabled = pending.length === 0;
+    els.go.textContent = pending.length
+      ? `Compress ${pending.length} file${pending.length > 1 ? "s" : ""} →`
+      : "Compress →";
+  }
+
+  function queueFiles(files) {
+    for (const f of files) {
+      if (/^image\//.test(f.type)) {
+        try { f._url = URL.createObjectURL(f); } catch (_) { /* no preview */ }
+      }
+      pending.push(f);
+    }
+    renderQueue();
+  }
 
   // ---------- presets ----------
   const presets = window.EXACTKB_PRESETS || [];
@@ -140,9 +195,18 @@
       if (e.key === "Enter" || e.key === " ") { e.preventDefault(); els.fileInput.click(); }
     });
     els.fileInput.addEventListener("change", () => {
-      if (els.fileInput.files.length) handleFiles([...els.fileInput.files]);
+      if (els.fileInput.files.length) queueFiles([...els.fileInput.files]);
       els.fileInput.value = "";
     });
+    if (els.go) {
+      els.go.addEventListener("click", () => {
+        if (!pending.length) return;
+        const files = pending.splice(0);
+        renderQueue();
+        files.forEach((f) => { if (f._url) { URL.revokeObjectURL(f._url); delete f._url; } });
+        handleFiles(files);
+      });
+    }
     ["dragenter", "dragover"].forEach((ev) =>
       drop.addEventListener(ev, (e) => { e.preventDefault(); drop.classList.add("over"); })
     );
@@ -151,11 +215,11 @@
     );
     drop.addEventListener("drop", (e) => {
       const files = [...(e.dataTransfer?.files || [])];
-      if (files.length) handleFiles(files);
+      if (files.length) queueFiles(files);
     });
     document.addEventListener("paste", (e) => {
       const files = [...(e.clipboardData?.files || [])];
-      if (files.length) handleFiles(files);
+      if (files.length) queueFiles(files);
     });
   }
 
