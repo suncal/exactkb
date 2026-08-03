@@ -369,18 +369,19 @@
     return { isDoc: satSum / n < 28 && edges / n > 0.02 };
   }
 
-  // Grayscale + percentile contrast stretch — makes scanned/photographed
-  // text dark-on-white and cheap to encode.
+  // COLOR-PRESERVING contrast stretch for document-like images: lo/hi come
+  // from the luma histogram but the same gain applies to every RGB channel,
+  // so text gets crisp dark-on-white while colors (stamps, seals, ink,
+  // muted photos misdetected as docs) stay colors. The compressor must
+  // never silently grayscale — that's an explicit Document Cleaner mode only.
   function enhanceDoc(canvas) {
     const ctx = canvas.getContext("2d");
     const w = canvas.width, h = canvas.height, n = w * h;
     const img = ctx.getImageData(0, 0, w, h);
     const d = img.data;
-    const lum = new Uint8ClampedArray(n);
     const hist = new Uint32Array(256);
     for (let i = 0; i < n; i++) {
-      const v = (0.299 * d[i * 4] + 0.587 * d[i * 4 + 1] + 0.114 * d[i * 4 + 2]) | 0;
-      lum[i] = v; hist[v]++;
+      hist[(0.299 * d[i * 4] + 0.587 * d[i * 4 + 1] + 0.114 * d[i * 4 + 2]) | 0]++;
     }
     const cut = n * 0.02;
     let lo = 0, hi = 255, acc = 0;
@@ -388,9 +389,11 @@
     acc = 0;
     for (let v = 255; v >= 0; v--) { acc += hist[v]; if (acc > cut) { hi = v; break; } }
     const range = Math.max(24, hi - lo);
-    for (let i = 0; i < n; i++) {
-      const v = ((lum[i] - lo) * 255) / range;
-      d[i * 4] = d[i * 4 + 1] = d[i * 4 + 2] = v;
+    for (let i = 0; i < n * 4; i += 4) {
+      for (let c = 0; c < 3; c++) {
+        const v = ((d[i + c] - lo) * 255) / range;
+        d[i + c] = v < 0 ? 0 : v > 255 ? 255 : v;
+      }
     }
     ctx.putImageData(img, 0, 0);
   }

@@ -438,7 +438,7 @@ def render_pdf(slug, p):
   <title>{html.escape(p["title"])}</title>
   <meta name="description" content="{html.escape(p["desc"])}">
   <link rel="canonical" href="{BASE_URL}/{slug}/">
-  <link rel="stylesheet" href="../style.css?v=8">
+  <link rel="stylesheet" href="../style.css?v=9">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🎯</text></svg>">
   <meta property="og:title" content="{html.escape(p["title"])}">
   <meta property="og:description" content="{html.escape(p["desc"])}">
@@ -511,7 +511,7 @@ def render_pdf(slug, p):
   </footer>
 
   <script>window.PDF_PRESET = {preset_json};</script>
-  <script src="../pdf-app.js?v=8"></script>
+  <script src="../pdf-app.js?v=9"></script>
 </body>
 </html>
 """
@@ -535,7 +535,7 @@ def render(slug, p):
   <title>{html.escape(p["title"])}</title>
   <meta name="description" content="{html.escape(p["desc"])}">
   <link rel="canonical" href="{BASE_URL}/{slug}/">
-  <link rel="stylesheet" href="../style.css?v=8">
+  <link rel="stylesheet" href="../style.css?v=9">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🎯</text></svg>">
   <meta property="og:title" content="{html.escape(p["title"])}">
   <meta property="og:description" content="{html.escape(p["desc"])}">
@@ -648,8 +648,8 @@ def render(slug, p):
   </footer>
 
   <script>window.PAGE_PRESET = {preset_json};</script>
-  <script src="../presets.js?v=8"></script>
-  <script src="../app.js?v=8"></script>
+  <script src="../presets.js?v=9"></script>
+  <script src="../app.js?v=9"></script>
 </body>
 </html>
 """
