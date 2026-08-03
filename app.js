@@ -4,6 +4,37 @@
 
   const $ = (sel) => document.querySelector(sel);
 
+  // Base URL of the app assets (works from / and from /landing-page/ dirs)
+  const BASE = new URL(".", document.currentScript.src).href;
+
+  let heicLoader = null;
+  function loadHeicLib() {
+    if (window.heic2any) return Promise.resolve();
+    if (!heicLoader) {
+      heicLoader = new Promise((resolve, reject) => {
+        const s = document.createElement("script");
+        s.src = BASE + "vendor/heic2any.min.js";
+        s.onload = resolve;
+        s.onerror = () => reject(new Error("Could not load the HEIC converter."));
+        document.head.appendChild(s);
+      });
+    }
+    return heicLoader;
+  }
+
+  function isHeic(file) {
+    return /image\/hei[cf]/.test(file.type) || /\.hei[cf]$/i.test(file.name);
+  }
+
+  async function normalizeInput(file, onStatus) {
+    if (!isHeic(file)) return file;
+    onStatus("Converting HEIC…");
+    await loadHeicLib();
+    const blob = await window.heic2any({ blob: file, toType: "image/jpeg", quality: 0.92 });
+    const jpeg = Array.isArray(blob) ? blob[0] : blob;
+    return new File([jpeg], file.name.replace(/\.hei[cf]$/i, ".jpg"), { type: "image/jpeg" });
+  }
+
   const els = {
     drop: $("#drop"),
     fileInput: $("#file-input"),
@@ -108,14 +139,11 @@
       const card = makeCard(file);
       els.results.prepend(card.root);
       try {
-        if (!/^image\/(jpeg|png|webp|gif|bmp)/.test(file.type)) {
-          throw new Error(
-            file.name.toLowerCase().endsWith(".heic") || file.type === "image/heic"
-              ? "HEIC isn't supported yet — on iPhone, set Camera → Formats → Most Compatible, or share the photo via WhatsApp/email to get a JPG."
-              : "Unsupported file type. Use JPG, PNG, WebP, GIF or BMP."
-          );
+        if (!/^image\/(jpeg|png|webp|gif|bmp)/.test(file.type) && !isHeic(file)) {
+          throw new Error("Unsupported file type. Use JPG, PNG, WebP, HEIC, GIF or BMP.");
         }
-        const out = await compressToTarget(file, settings, (msg) => card.setStatus(msg));
+        const input = await normalizeInput(file, (msg) => card.setStatus(msg));
+        const out = await compressToTarget(input, settings, (msg) => card.setStatus(msg));
         card.finish(file, out, settings);
       } catch (err) {
         card.fail(err.message || String(err));

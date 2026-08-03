@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Compress PDF to Any Exact KB Size — Free, Private, In-Browser</title>
+  <meta name="description" content="Compress a PDF to the exact KB size an upload form demands — 100 KB, 200 KB, anything. Runs entirely in your browser; documents never uploaded.">
+  <link rel="canonical" href="https://suncal.github.io/exactkb/compress-pdf/">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🎯</text></svg>">
+  <meta property="og:title" content="Compress PDF to Any Exact KB Size — Free, Private, In-Browser">
+  <meta property="og:description" content="Compress a PDF to the exact KB size an upload form demands — 100 KB, 200 KB, anything. Runs entirely in your browser; documents never uploaded.">
+  <meta property="og:type" content="website">
+</head>
+<body>
+  <header>
+    <div class="wrap header-inner">
+      <a class="logo" href="../">Exact<span>KB</span> 🎯</a>
+      <div class="trust">100% in your browser — files never leave your device</div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="hero">
+      <h1>Compress a PDF to the exact size the form demands</h1>
+      <p class="sub">Set the KB limit from your upload form, drop the PDF, download a file that fits — first try.</p>
+      <div class="badges">
+        <span class="badge">✓ Exact-size targeting</span>
+        <span class="badge">🔒 Never uploaded — private</span>
+        <span class="badge">Free, no signup</span>
+      </div>
+    </section>
+
+    <section class="tool" id="tool">
+      <div class="controls">
+        <div class="field full">
+          <label for="max-kb">Max size (KB) *</label>
+          <input type="number" id="max-kb" min="10" placeholder="e.g. 200" value="200">
+        </div>
+      </div>
+
+      <div class="drop" id="drop" role="button" tabindex="0" aria-label="Choose or drop PDF files">
+        <div class="big">📄</div>
+        <div class="main">Drop PDFs here or click to choose</div>
+        <div class="hint">Up to 60 pages per file · multiple files OK · nothing is uploaded</div>
+      </div>
+      <input type="file" id="file-input" accept="application/pdf,.pdf" multiple hidden>
+
+      <div id="results-section">
+        <h2>Your files</h2>
+        <div id="results"></div>
+      </div>
+    </section>
+
+    <section class="content">
+      <p>Scanned documents balloon into multi-megabyte PDFs, and portals cap uploads at a few hundred KB. ExactKB re-renders each page and finds the highest quality that fits your exact limit — no retry loop, no uploading your documents to a stranger's server.</p>
+      <p>Everything runs in your browser. Certificates, bank statements, ID scans — they never leave your device.</p>
+
+      <h2>FAQ</h2>
+      <p class="faq-q">Will the text still be readable?</p>
+      <p>Yes — ExactKB uses the highest quality your KB budget allows. At very tight limits on long documents, expect softer text; the tool warns you if a limit is unreachable.</p>
+      <p class="faq-q">Does the text stay selectable?</p>
+      <p>No — pages are re-rendered as images to guarantee the size target, which is what upload portals care about. Keep your original for archival.</p>
+      <p class="faq-q">How many pages can it handle?</p>
+      <p>Up to 60 pages. For bigger files, split the PDF first.</p>
+      <p class="faq-q">Is my document uploaded to a server?</p>
+      <p>No. The PDF engine runs entirely in your browser — certificates, statements and ID scans never leave your device.</p>
+
+      <h2>More tools</h2>
+      <div class="related">
+        <a href="../compress-pdf-to-100kb/">Compress a PDF to 100 KB</a>
+        <a href="../compress-pdf-to-200kb/">Compress a PDF to 200 KB</a>
+        <a href="../compress-pdf-to-500kb/">Compress a PDF to 500 KB</a>
+        <a href="../">Image compressor (photos, signatures) →</a>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      ExactKB — free exact-size compression · <a href="../">Home</a> · Files are processed on your device and never uploaded. © <span id="year"></span>
+    </div>
+  </footer>
+
+  <script>window.PDF_PRESET = {"maxKB": 200};</script>
+  <script src="../pdf-app.js"></script>
+</body>
+</html>

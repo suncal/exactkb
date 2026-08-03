@@ -290,6 +290,60 @@ PAGES = {
             ("What about GIFs and videos?", "Animated GIFs are converted to a static frame for now — video and GIF support is on the roadmap."),
         ],
     },
+    "heic-to-jpg": {
+        "title": "HEIC to JPG Converter — Free, Private, In-Browser",
+        "desc": "Convert iPhone HEIC photos to JPG instantly in your browser — no upload, no signup. Optionally fit an exact KB size too.",
+        "h1": "Convert HEIC to JPG",
+        "sub": "iPhone photos → universal JPG, right in your browser. Nothing is uploaded anywhere.",
+        "preset": {"id": "custom", "country": "global", "minKB": None, "maxKB": 10000, "width": None, "height": None, "format": "jpeg"},
+        "intro": [
+            "iPhones shoot HEIC by default — great for storage, useless for upload forms, Windows PCs, and half the web. Drop your HEIC files here and get standard JPGs back in seconds. Conversion happens entirely on your device.",
+            "Bonus over ordinary converters: if the form you're filling also has a size limit, set the Max KB and the output will fit it in the same step.",
+        ],
+        "faqs": [
+            ("Why does my iPhone take HEIC photos?", "HEIC halves the storage of JPG at the same quality, so Apple made it the default. You can switch in Settings → Camera → Formats → Most Compatible — or just convert here when needed."),
+            ("Is the photo quality preserved?", "Yes — conversion uses a high-quality setting by default. Add a KB limit only if a form requires one."),
+        ],
+    },
+    "youtube-thumbnail-resize": {
+        "title": "YouTube Thumbnail Resize — 1280×720 Under 2 MB, Free",
+        "desc": "Resize any image to YouTube's exact thumbnail spec: 1280×720, 16:9, under 2 MB. In-browser and private.",
+        "h1": "YouTube thumbnail resizer — 1280×720",
+        "sub": "YouTube's exact spec: 1280×720 px (16:9), max 2 MB.",
+        "preset": {"id": "youtube-thumbnail", "country": "global", "minKB": None, "maxKB": 2000, "width": 1280, "height": 720, "format": "jpeg"},
+        "intro": [
+            "YouTube rejects thumbnails over 2 MB and stretches anything that isn't 16:9. This preset crops your image to exactly 1280×720 and fits it under the cap at the best quality — one drop, one download, ready to upload in YouTube Studio.",
+        ],
+        "faqs": [
+            ("JPG or PNG for thumbnails?", "Both work. JPG is smaller; PNG is better for text-heavy thumbnails with flat colors. Switch the output format above if you prefer PNG."),
+        ],
+    },
+    "bangladesh-govt-job-photo": {
+        "title": "BD Govt Job Photo & Signature Resize — 300×300 & 300×80 (Teletalk)",
+        "desc": "Resize your Bangladesh government job application photo (300×300, ≤100 KB) and signature (300×80, ≤60 KB) to the Teletalk spec. Free & private.",
+        "h1": "Bangladesh govt job photo & signature resizer",
+        "sub": "The standard Teletalk spec: photo 300×300 px under 100 KB, signature 300×80 px under 60 KB.",
+        "preset": {"id": "bd-govt-photo", "country": "bd", "minKB": None, "maxKB": 100, "width": 300, "height": 300, "format": "jpeg"},
+        "intro": [
+            "Almost every Bangladesh government job application runs through Teletalk's portal, and it enforces the same two files everywhere: a 300×300 photo under 100 KB and a 300×80 signature under 60 KB. Use the preset menu above to switch between them — each comes out exactly to spec.",
+        ],
+        "faqs": [
+            ("Does this work for all BD govt circulars?", "The 300×300 / 300×80 pattern is the Teletalk standard used across ministries and directorates. Always verify your specific circular's annexure."),
+        ],
+    },
+    "jamb-photo-resize": {
+        "title": "JAMB Photo Resize — Under 50 KB for Registration, Free & Private",
+        "desc": "Compress your JAMB registration passport photo to under 50 KB with a clean white background crop. In-browser and private.",
+        "h1": "JAMB registration photo — under 50 KB",
+        "sub": "Nigeria's JAMB registration photo spec: JPG under 50 KB, white or light background.",
+        "preset": {"id": "jamb-photo", "country": "ng", "minKB": None, "maxKB": 50, "width": None, "height": None, "format": "jpeg"},
+        "intro": [
+            "JAMB registration rejects oversized photos, and cyber-café queues charge for every retry. Compress your passport photo to under 50 KB here first — free, on your own phone, in seconds. Remember the content rules too: recent photo, white or light background, no caps or glasses. Verify current requirements at jamb.gov.ng.",
+        ],
+        "faqs": [
+            ("Can I use a phone photo?", "Yes — a clear phone photo against a white wall works if it meets JAMB's content rules. This tool handles the file-size side."),
+        ],
+    },
     "linkedin-photo-resize": {
         "title": "LinkedIn Profile Photo Resize — Sharp 400×400+, Free & Private",
         "desc": "Crop and size your LinkedIn headshot to a crisp square that uploads clean. In-browser, private, free.",
@@ -304,6 +358,159 @@ PAGES = {
         ],
     },
 }
+
+
+# ---------- PDF pages ----------
+PDF_PAGES = {
+    "compress-pdf": {
+        "title": "Compress PDF to Any Exact KB Size — Free, Private, In-Browser",
+        "desc": "Compress a PDF to the exact KB size an upload form demands — 100 KB, 200 KB, anything. Runs entirely in your browser; documents never uploaded.",
+        "h1": "Compress a PDF to the exact size the form demands",
+        "sub": "Set the KB limit from your upload form, drop the PDF, download a file that fits — first try.",
+        "maxKB": 200,
+        "intro": [
+            "Scanned documents balloon into multi-megabyte PDFs, and portals cap uploads at a few hundred KB. ExactKB re-renders each page and finds the highest quality that fits your exact limit — no retry loop, no uploading your documents to a stranger's server.",
+            "Everything runs in your browser. Certificates, bank statements, ID scans — they never leave your device.",
+        ],
+        "faqs": [
+            ("Will the text still be readable?", "Yes — ExactKB uses the highest quality your KB budget allows. At very tight limits on long documents, expect softer text; the tool warns you if a limit is unreachable."),
+            ("Does the text stay selectable?", "No — pages are re-rendered as images to guarantee the size target, which is what upload portals care about. Keep your original for archival."),
+            ("How many pages can it handle?", "Up to 60 pages. For bigger files, split the PDF first."),
+        ],
+    },
+    "compress-pdf-to-100kb": {
+        "title": "Compress PDF to 100 KB Online — Free, Exact & Private",
+        "desc": "Get any PDF under 100 KB for strict upload portals. Exact targeting, in-browser, documents never uploaded.",
+        "h1": "Compress a PDF to 100 KB",
+        "sub": "For the strictest document-upload limits on government and application portals.",
+        "maxKB": 100,
+        "intro": [
+            "A 100 KB cap usually means a one-or-two-page document — a certificate, a signed form, an ID scan. ExactKB re-renders your pages at the highest quality that fits under 100 KB, entirely on your device.",
+        ],
+        "faqs": [
+            ("My 20-page PDF won't fit under 100 KB. Why?", "100 KB across 20 pages is ~5 KB per page — physically too little for readable text. Split the document or check whether the portal allows multiple uploads."),
+        ],
+    },
+    "compress-pdf-to-200kb": {
+        "title": "Compress PDF to 200 KB Online — Free, Exact & Private",
+        "desc": "Compress any PDF under 200 KB for tax portals, applications and government uploads. In-browser and private.",
+        "h1": "Compress a PDF to 200 KB",
+        "sub": "The most common PDF ceiling on tax and application portals.",
+        "maxKB": 200,
+        "intro": [
+            "Income-tax portals, university applications, and visa document checklists love the 200 KB cap. Drop your PDF and get one that fits — your documents are processed on your device and never uploaded.",
+        ],
+        "faqs": [
+            ("Is 200 KB enough for a scanned document?", "Comfortably, for 1–5 pages. Longer scans may come out softer — the tool always uses the best quality your limit allows."),
+        ],
+    },
+    "compress-pdf-to-500kb": {
+        "title": "Compress PDF to 500 KB Online — Free, Exact & Private",
+        "desc": "Fit any PDF under 500 KB in one step. Exact-size compression in your browser — files never leave your device.",
+        "h1": "Compress a PDF to 500 KB",
+        "sub": "For portals with a half-megabyte document cap.",
+        "maxKB": 500,
+        "intro": [
+            "500 KB is generous — most scanned documents fit with quality to spare. ExactKB uses your full budget instead of over-compressing, so the result stays crisp while passing the portal's check on the first try.",
+        ],
+        "faqs": [
+            ("Can I compress several PDFs at once?", "Yes — drop multiple files and each is fitted to the same limit."),
+        ],
+    },
+}
+
+
+def render_pdf(slug, p):
+    preset_json = json.dumps({"maxKB": p["maxKB"]})
+    intro_html = "\n      ".join(f"<p>{para}</p>" for para in p["intro"])
+    faq_html = "\n      ".join(
+        f'<p class="faq-q">{html.escape(q)}</p>\n      <p>{a}</p>' for q, a in p["faqs"]
+    )
+    related = [s for s in PDF_PAGES if s != slug]
+    related_html = "\n        ".join(
+        f'<a href="../{s}/">{PDF_PAGES[s]["h1"]}</a>' for s in related
+    )
+    return f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{html.escape(p["title"])}</title>
+  <meta name="description" content="{html.escape(p["desc"])}">
+  <link rel="canonical" href="{BASE_URL}/{slug}/">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🎯</text></svg>">
+  <meta property="og:title" content="{html.escape(p["title"])}">
+  <meta property="og:description" content="{html.escape(p["desc"])}">
+  <meta property="og:type" content="website">
+</head>
+<body>
+  <header>
+    <div class="wrap header-inner">
+      <a class="logo" href="../">Exact<span>KB</span> 🎯</a>
+      <div class="trust">100% in your browser — files never leave your device</div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="hero">
+      <h1>{p["h1"]}</h1>
+      <p class="sub">{p["sub"]}</p>
+      <div class="badges">
+        <span class="badge">✓ Exact-size targeting</span>
+        <span class="badge">🔒 Never uploaded — private</span>
+        <span class="badge">Free, no signup</span>
+      </div>
+    </section>
+
+    <section class="tool" id="tool">
+      <div class="controls">
+        <div class="field full">
+          <label for="max-kb">Max size (KB) *</label>
+          <input type="number" id="max-kb" min="10" placeholder="e.g. 200" value="{p["maxKB"]}">
+        </div>
+      </div>
+
+      <div class="drop" id="drop" role="button" tabindex="0" aria-label="Choose or drop PDF files">
+        <div class="big">📄</div>
+        <div class="main">Drop PDFs here or click to choose</div>
+        <div class="hint">Up to 60 pages per file · multiple files OK · nothing is uploaded</div>
+      </div>
+      <input type="file" id="file-input" accept="application/pdf,.pdf" multiple hidden>
+
+      <div id="results-section">
+        <h2>Your files</h2>
+        <div id="results"></div>
+      </div>
+    </section>
+
+    <section class="content">
+      {intro_html}
+
+      <h2>FAQ</h2>
+      {faq_html}
+      <p class="faq-q">Is my document uploaded to a server?</p>
+      <p>No. The PDF engine runs entirely in your browser — certificates, statements and ID scans never leave your device.</p>
+
+      <h2>More tools</h2>
+      <div class="related">
+        {related_html}
+        <a href="../">Image compressor (photos, signatures) →</a>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      ExactKB — free exact-size compression · <a href="../">Home</a> · Files are processed on your device and never uploaded. © <span id="year"></span>
+    </div>
+  </footer>
+
+  <script>window.PDF_PRESET = {preset_json};</script>
+  <script src="../pdf-app.js"></script>
+</body>
+</html>
+"""
 
 
 def render(slug, p):
@@ -445,6 +652,12 @@ def main():
         with open(os.path.join(outdir, "index.html"), "w") as f:
             f.write(render(slug, p))
         urls.append(f"{BASE_URL}/{slug}/")
+    for slug, p in PDF_PAGES.items():
+        outdir = os.path.join(ROOT, slug)
+        os.makedirs(outdir, exist_ok=True)
+        with open(os.path.join(outdir, "index.html"), "w") as f:
+            f.write(render_pdf(slug, p))
+        urls.append(f"{BASE_URL}/{slug}/")
     with open(os.path.join(ROOT, "sitemap.xml"), "w") as f:
         f.write('<?xml version="1.0" encoding="UTF-8"?>\n')
         f.write('<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n')
@@ -453,7 +666,7 @@ def main():
         f.write("</urlset>\n")
     with open(os.path.join(ROOT, "robots.txt"), "w") as f:
         f.write(f"User-agent: *\nAllow: /\nSitemap: {BASE_URL}/sitemap.xml\n")
-    print(f"Generated {len(PAGES)} pages + sitemap ({len(urls)} URLs)")
+    print(f"Generated {len(PAGES)} image pages + {len(PDF_PAGES)} PDF pages + sitemap ({len(urls)} URLs)")
 
 
 if __name__ == "__main__":

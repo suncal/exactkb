@@ -10,6 +10,8 @@ window.EXACTKB_COUNTRIES = [
   { id: "eu", label: "🇪🇺 Europe / Schengen" },
   { id: "ca", label: "🇨🇦 Canada" },
   { id: "au", label: "🇦🇺 Australia" },
+  { id: "bd", label: "🇧🇩 Bangladesh" },
+  { id: "ng", label: "🇳🇬 Nigeria" },
 ];
 
 window.EXACTKB_PRESETS = [
@@ -48,6 +50,18 @@ window.EXACTKB_PRESETS = [
     label: "Website image (≤ 200 KB, fast-loading)",
     minKB: null, maxKB: 200, width: 1600, height: null, format: "jpeg",
     note: "A good rule of thumb for fast pages: hero images under 200 KB at ~1600 px wide."
+  },
+  {
+    id: "youtube-thumbnail", country: "global",
+    label: "YouTube thumbnail (1280×720, ≤ 2 MB)",
+    minKB: null, maxKB: 2000, width: 1280, height: 720, format: "jpeg",
+    note: "YouTube thumbnails: 1280×720 px (16:9), max 2 MB, JPG/PNG."
+  },
+  {
+    id: "instagram-post", country: "global",
+    label: "Instagram post (1080×1080 square)",
+    minKB: null, maxKB: 1000, width: 1080, height: 1080, format: "jpeg",
+    note: "Instagram displays square posts at 1080×1080 px. Pre-sizing avoids Instagram's aggressive recompression."
   },
 
   // ---------- India ----------
@@ -198,5 +212,33 @@ window.EXACTKB_PRESETS = [
     label: "Australia passport photo (35×45 mm print spec)",
     minKB: null, maxKB: 2000, width: 827, height: 1063, format: "jpeg",
     note: "Australian passport photos are 35×45 mm; digital services vary. Verify at passports.gov.au."
+  },
+
+  // ---------- Bangladesh ----------
+  {
+    id: "bd-govt-photo", country: "bd",
+    label: "BD Govt job (Teletalk) — Photo (300×300, ≤ 100 KB)",
+    minKB: null, maxKB: 100, width: 300, height: 300, format: "jpeg",
+    note: "Standard Teletalk application spec: photo 300×300 px, max 100 KB JPG. Verify in your circular."
+  },
+  {
+    id: "bd-govt-signature", country: "bd",
+    label: "BD Govt job (Teletalk) — Signature (300×80, ≤ 60 KB)",
+    minKB: null, maxKB: 60, width: 300, height: 80, format: "jpeg",
+    note: "Standard Teletalk application spec: signature 300×80 px, max 60 KB JPG. Verify in your circular."
+  },
+
+  // ---------- Nigeria ----------
+  {
+    id: "jamb-photo", country: "ng",
+    label: "JAMB — Passport photo (≤ 50 KB)",
+    minKB: null, maxKB: 50, width: null, height: null, format: "jpeg",
+    note: "JAMB registration photo: JPG, max 50 KB, white/light background, recent. Verify at jamb.gov.ng."
+  },
+  {
+    id: "ng-portal-doc", country: "ng",
+    label: "Nigerian portal document (≤ 500 KB)",
+    minKB: null, maxKB: 500, width: null, height: null, format: "jpeg",
+    note: "Common cap on Nigerian government/university portals is 300–500 KB per file. Verify on your portal."
   },
 ];
