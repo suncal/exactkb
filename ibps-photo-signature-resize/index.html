@@ -62,8 +62,9 @@
         <div class="field">
           <label for="out-format">Output format</label>
           <select id="out-format">
-            <option value="jpeg" selected>JPG (recommended — smallest)</option>
-            <option value="png">PNG</option>
+            <option value="jpeg" selected>JPG — universal, smallest for photos</option>
+            <option value="webp">WebP — modern, even smaller</option>
+            <option value="png">PNG — lossless, best for graphics</option>
           </select>
         </div>
         <p id="preset-note"></p>
@@ -117,7 +118,9 @@
 
   <footer>
     <div class="wrap">
-      ExactKB — free exact-size image compression · <a href="../">Home</a> · Files are processed on your device and never uploaded. © <span id="year"></span>
+      <div class="footer-bottom">
+        <div>© <span id="year"></span> ExactKB · <a href="../">Home</a> · <a href="../privacy/">Privacy</a> · <a href="../terms/">Terms</a> · Files are processed on your device and never uploaded. Not affiliated with any government agency or portal.</div>
+      </div>
     </div>
   </footer>
 

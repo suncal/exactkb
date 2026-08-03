@@ -139,8 +139,8 @@
       const card = makeCard(file);
       els.results.prepend(card.root);
       try {
-        if (!/^image\/(jpeg|png|webp|gif|bmp)/.test(file.type) && !isHeic(file)) {
-          throw new Error("Unsupported file type. Use JPG, PNG, WebP, HEIC, GIF or BMP.");
+        if (!/^image\/(jpeg|png|webp|gif|bmp|avif|svg\+xml)/.test(file.type) && !isHeic(file) && !/\.(avif|svg)$/i.test(file.name)) {
+          throw new Error("Unsupported file type. Use JPG, PNG, WebP, HEIC, AVIF, SVG, GIF or BMP.");
         }
         const input = await normalizeInput(file, (msg) => card.setStatus(msg));
         const out = await compressToTarget(input, settings, (msg) => card.setStatus(msg));
@@ -215,7 +215,7 @@
     const bitmap = await loadBitmap(file);
     const maxBytes = Math.floor(s.maxKB * 1024);
     const minBytes = s.minKB ? Math.ceil(s.minKB * 1024) : 0;
-    const type = s.format === "png" ? "image/png" : "image/jpeg";
+    const type = s.format === "png" ? "image/png" : s.format === "webp" ? "image/webp" : "image/jpeg";
 
     let scale = 1.0;
     let best = null;
@@ -228,11 +228,14 @@
         const blob = await canvasToBlob(canvas, "image/png");
         if (blob.size <= maxBytes) { best = { blob, canvas }; break; }
       } else {
-        // binary-search JPEG quality at this scale
+        // binary-search encode quality (JPEG/WebP) at this scale
         let lo = 0.02, hi = 0.97, fit = null;
         for (let i = 0; i < 9; i++) {
           const q = (lo + hi) / 2;
           const blob = await canvasToBlob(canvas, type, q);
+          if (!blob || blob.type !== type) {
+            throw new Error("Your browser can't encode " + s.format.toUpperCase() + " — choose JPG output instead.");
+          }
           if (blob.size > maxBytes) hi = q; else { fit = { blob, canvas, q }; lo = q; }
         }
         if (fit) { best = fit; break; }
@@ -340,7 +343,7 @@
         const a = document.createElement("a");
         a.className = "btn btn-download";
         a.href = url;
-        const ext = s.format === "png" ? "png" : "jpg";
+        const ext = s.format === "png" ? "png" : s.format === "webp" ? "webp" : "jpg";
         const base = srcFile.name.replace(/\.[^.]+$/, "");
         a.download = `${base}-${Math.round(blob.size / 1024)}kb.${ext}`;
         a.textContent = "Download";

@@ -4,12 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ExactKB — Compress Images to an Exact KB Size, Free &amp; Private</title>
-  <meta name="description" content="Compress and resize any photo to the exact KB size an upload form demands — 20KB, 50KB, 200KB, anything. Country-specific presets for visa, passport and exam portals. 100% in your browser, files never uploaded.">
+  <meta name="description" content="Compress and resize any photo to the exact KB size an upload form demands — 20KB, 50KB, 200KB, anything. Country-specific presets for visa, passport and exam portals worldwide. 100% in your browser, files never uploaded.">
   <link rel="canonical" href="https://suncal.github.io/exactkb/">
   <link rel="stylesheet" href="style.css">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🎯</text></svg>">
   <meta property="og:title" content="ExactKB — Compress Images to an Exact KB Size">
-  <meta property="og:description" content="Fit any photo to the exact size an upload form demands. Free, private, in-browser.">
+  <meta property="og:description" content="Fit any photo or PDF to the exact size an upload form demands. Free, private, in-browser.">
   <meta property="og:type" content="website">
   <script type="application/ld+json">
   {
@@ -19,27 +19,34 @@
     "applicationCategory": "UtilitiesApplication",
     "operatingSystem": "Any",
     "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
-    "description": "Compress and resize images to an exact KB size for upload forms, with country-specific presets for visa, passport, and exam portals. Runs entirely in the browser."
+    "description": "Compress and resize images and PDFs to an exact KB size for upload forms, with country-specific presets for visa, passport, and exam portals. Runs entirely in the browser."
   }
   </script>
 </head>
 <body>
   <header>
     <div class="wrap header-inner">
-      <a class="logo" href="./">Exact<span>KB</span> 🎯</a>
-      <div class="trust">100% in your browser — files never leave your device</div>
+      <a class="logo" href="./"><span class="logo-mark">🎯</span>Exact<span>KB</span></a>
+      <nav class="nav">
+        <a href="#tool">Images</a>
+        <a href="compress-pdf/">PDF</a>
+        <a href="heic-to-jpg/">HEIC → JPG</a>
+        <a href="#faq">FAQ</a>
+        <a class="nav-cta" href="#tool">Compress now</a>
+      </nav>
     </div>
   </header>
 
   <main class="wrap">
     <section class="hero">
-      <h1>Compress any photo to the <em>exact</em> KB size the form demands</h1>
-      <p class="sub">"Photo must be 20–50 KB." "Max 240 KB." "Between 10 and 20 KB." Stop guessing and retrying — drop your image, set the target, download a file that fits on the first try.</p>
-      <div class="badges">
-        <span class="badge">✓ Exact-size targeting</span>
-        <span class="badge">✓ Country presets — visa, passport, exams</span>
-        <span class="badge">🔒 Never uploaded — works offline</span>
-        <span class="badge">Free, no signup</span>
+      <div class="eyebrow">🔒 100% private — files never leave your device</div>
+      <h1>Fit any photo to the <em>exact size</em> the form demands</h1>
+      <p class="sub">"Photo must be 20–50 KB." "Max 240 KB." "Between 10 and 20 KB." Stop guessing and retrying — pick your country's preset or set the target, drop your image, and download a file that fits on the first try.</p>
+      <div class="stats">
+        <div class="stat"><b>30+</b><span>portal presets</span></div>
+        <div class="stat"><b>9</b><span>countries covered</span></div>
+        <div class="stat"><b>0</b><span>files uploaded, ever</span></div>
+        <div class="stat"><b>Free</b><span>no signup, no limits</span></div>
       </div>
     </section>
 
@@ -55,27 +62,28 @@
         </div>
         <div class="size-row">
           <div class="field">
-            <label for="min-kb">Min size (KB, optional)</label>
-            <input type="number" id="min-kb" min="1" placeholder="e.g. 20">
+            <label for="min-kb">Min size (KB)</label>
+            <input type="number" id="min-kb" min="1" placeholder="optional">
           </div>
           <div class="field">
             <label for="max-kb">Max size (KB) *</label>
             <input type="number" id="max-kb" min="1" placeholder="e.g. 50" value="100">
           </div>
           <div class="field">
-            <label for="out-width">Width px (optional)</label>
+            <label for="out-width">Width (px)</label>
             <input type="number" id="out-width" min="16" placeholder="auto">
           </div>
           <div class="field">
-            <label for="out-height">Height px (optional)</label>
+            <label for="out-height">Height (px)</label>
             <input type="number" id="out-height" min="16" placeholder="auto">
           </div>
         </div>
         <div class="field">
           <label for="out-format">Output format</label>
           <select id="out-format">
-            <option value="jpeg" selected>JPG (recommended — smallest)</option>
-            <option value="png">PNG</option>
+            <option value="jpeg" selected>JPG — universal, smallest for photos</option>
+            <option value="webp">WebP — modern, even smaller</option>
+            <option value="png">PNG — lossless, best for graphics</option>
           </select>
         </div>
         <p id="preset-note"></p>
@@ -84,9 +92,9 @@
       <div class="drop" id="drop" role="button" tabindex="0" aria-label="Choose or drop images">
         <div class="big">📸</div>
         <div class="main">Drop images here, paste, or click to choose</div>
-        <div class="hint">JPG, PNG, HEIC (iPhone), WebP, GIF, BMP · multiple files OK · nothing is uploaded · <a href="compress-pdf/">need a PDF instead?</a></div>
+        <div class="hint">JPG · PNG · HEIC (iPhone) · WebP · AVIF · SVG · GIF · BMP — multiple files OK · <a href="compress-pdf/">need a PDF instead?</a></div>
       </div>
-      <input type="file" id="file-input" accept="image/*,.heic,.heif" multiple hidden>
+      <input type="file" id="file-input" accept="image/*,.heic,.heif,.avif,.svg" multiple hidden>
 
       <div id="results-section">
         <h2>Your files</h2>
@@ -94,17 +102,51 @@
       </div>
     </section>
 
-    <section class="content">
-      <h2>How it works</h2>
-      <ol>
-        <li><strong>Pick your target.</strong> Choose a country preset (US visa, UK passport, SSC exam, Schengen…) or type the exact KB limit from the form you're filling.</li>
-        <li><strong>Drop your photo.</strong> ExactKB finds the best quality and dimensions that land <em>inside</em> your size window — including padding files <em>up</em> when a form has a minimum size.</li>
-        <li><strong>Download.</strong> The file fits the requirement on the first try. Done.</li>
-      </ol>
+    <section class="features">
+      <div class="feature">
+        <div class="icon">🎯</div>
+        <h3>Exact-size targeting</h3>
+        <p>Not "smaller" — <em>exact</em>. ExactKB finds the best quality that lands inside your size window, including growing files that are below a form's minimum. First try, every time.</p>
+      </div>
+      <div class="feature">
+        <div class="icon">🌍</div>
+        <h3>The Spec Registry</h3>
+        <p>Curated presets for real portals across 9 countries — US DS-160 &amp; DV Lottery, UK passport, Schengen, IRCC, SSC/UPSC/NEET, JAMB, Teletalk — each with the current published spec.</p>
+      </div>
+      <div class="feature">
+        <div class="icon">🔒</div>
+        <h3>Private by construction</h3>
+        <p>Your passport photo and documents are processed by your own browser and never uploaded anywhere. Load the page, go offline, and it still works. There is no server to trust.</p>
+      </div>
+    </section>
 
+    <section class="steps">
+      <div class="section-head">
+        <h2>Three steps. Zero retries.</h2>
+        <p>Built for the moment an upload form rejects your file.</p>
+      </div>
+      <div class="steps-grid">
+        <div class="step">
+          <div class="num">Step 1</div>
+          <h3>Pick your target</h3>
+          <p>Choose a country preset — US visa, UK passport, SSC exam, Schengen — or type the exact KB limit and dimensions from the form you're filling.</p>
+        </div>
+        <div class="step">
+          <div class="num">Step 2</div>
+          <h3>Drop your file</h3>
+          <p>ExactKB searches for the best quality and dimensions that land inside your window — and pads files up when the form has a minimum size.</p>
+        </div>
+        <div class="step">
+          <div class="num">Step 3</div>
+          <h3>Download &amp; upload</h3>
+          <p>The file fits the requirement on the first try. No account, no watermark, no "3 free conversions."</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="content" id="faq">
       <h2>Why ExactKB instead of a normal compressor?</h2>
       <p>Ordinary compressors shrink your image to <em>some</em> smaller size and let you retry until it fits. ExactKB targets the requirement itself: max-only limits ("under 240 KB"), windows ("20–50 KB"), exact pixel dimensions (600×600), and even minimum sizes — some government forms reject files for being <em>too small</em>, and ExactKB pads them into range with valid JPEG metadata.</p>
-      <p>And it's private by construction: everything runs in your browser. Your passport photo, signature, and documents are never sent to a server — you can load this page, turn off the internet, and it still works.</p>
 
       <h2>Popular targets</h2>
       <div class="related" id="related-links">
@@ -142,7 +184,9 @@
       <p class="faq-q">The form wants a minimum size too (e.g. "20–50 KB"). Can you handle that?</p>
       <p>Yes — that's ExactKB's specialty. If your file compresses below the minimum, ExactKB grows it back into the window using valid JPEG metadata so the portal accepts it.</p>
       <p class="faq-q">Are the country presets guaranteed to be current?</p>
-      <p>Presets reflect each portal's commonly published spec, but governments change requirements — always verify the numbers against the latest official notification, which every preset links to in its note.</p>
+      <p>Presets reflect each portal's commonly published spec, but governments change requirements — always verify the numbers against the latest official notification, which every preset points to in its note.</p>
+      <p class="faq-q">Which output format should I choose?</p>
+      <p>JPG is accepted everywhere and is the default. WebP is 20–30% smaller at the same quality — great for the web, but some older portals reject it. PNG is lossless and best for graphics, screenshots and text.</p>
       <p class="faq-q">Does it work on my phone?</p>
       <p>Yes. Any modern phone or computer browser works — no app to install.</p>
     </section>
@@ -150,7 +194,34 @@
 
   <footer>
     <div class="wrap">
-      ExactKB — free exact-size image compression · <a href="./">Home</a> · Files are processed on your device and never uploaded. © <span id="year"></span>
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a class="logo" href="./"><span class="logo-mark">🎯</span>Exact<span>KB</span></a>
+          <p>Free exact-size compression for the world's upload forms. Files are processed on your device and never uploaded.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Tools</h4>
+          <a href="./">Image compressor</a>
+          <a href="compress-pdf/">PDF compressor</a>
+          <a href="heic-to-jpg/">HEIC to JPG</a>
+          <a href="increase-image-size-to-20kb/">Increase file size</a>
+        </div>
+        <div class="footer-col">
+          <h4>By country</h4>
+          <a href="us-visa-photo-240kb/">United States</a>
+          <a href="uk-passport-photo-digital/">United Kingdom</a>
+          <a href="ssc-photo-signature-resize/">India</a>
+          <a href="schengen-visa-photo-size/">Europe / Schengen</a>
+        </div>
+        <div class="footer-col">
+          <h4>Legal</h4>
+          <a href="privacy/">Privacy policy</a>
+          <a href="terms/">Terms of use</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <div>© <span id="year"></span> ExactKB. Not affiliated with any government agency, examination board, or portal mentioned. Verify requirements with official sources.</div>
+      </div>
     </div>
   </footer>
 
