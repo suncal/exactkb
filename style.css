@@ -144,6 +144,72 @@ header {
   outline: none; border-color: var(--accent);
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent);
 }
+.field input:hover:not(:focus), .field select:hover:not(:focus) {
+  border-color: color-mix(in srgb, var(--accent) 35%, var(--line));
+}
+.field select {
+  appearance: none; -webkit-appearance: none; cursor: pointer;
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5 6 6.5 11 1.5' fill='none' stroke='%23768' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 13px center;
+  padding-right: 38px;
+}
+.input-wrap { position: relative; }
+.input-wrap .unit {
+  position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+  font-size: 0.72rem; font-weight: 700; color: var(--muted-solid);
+  pointer-events: none; letter-spacing: 0.03em;
+}
+.input-wrap input { padding-right: 42px; }
+
+/* ---------- magic box ---------- */
+.magic {
+  display: flex; align-items: center; gap: 10px;
+  border: 1px solid color-mix(in srgb, var(--accent) 30%, var(--line));
+  background:
+    linear-gradient(var(--card), var(--card)) padding-box,
+    linear-gradient(120deg, color-mix(in srgb, var(--accent) 55%, transparent), color-mix(in srgb, var(--accent-2) 55%, transparent)) border-box;
+  border: 1px solid transparent;
+  border-radius: 13px; padding: 8px 8px 8px 14px; margin-bottom: 14px;
+  box-shadow: 0 2px 12px color-mix(in srgb, var(--accent) 8%, transparent);
+}
+.magic .magic-icon { font-size: 1.05rem; }
+.magic input {
+  flex: 1; min-width: 0; border: none; background: transparent; outline: none;
+  font-size: 0.92rem; color: var(--text); font-family: inherit; padding: 6px 0;
+}
+.magic input::placeholder { color: var(--muted-solid); opacity: 0.75; }
+.magic-btn {
+  flex: 0 0 auto; padding: 9px 16px; border: none; border-radius: 9px;
+  font-weight: 700; font-size: 0.84rem; cursor: pointer; font-family: inherit;
+  background: linear-gradient(135deg, var(--accent), color-mix(in srgb, var(--accent) 65%, var(--accent-2)));
+  color: #fff;
+}
+.magic-btn:hover { filter: brightness(1.08); }
+.magic-result {
+  display: none; font-size: 0.84rem; border-radius: 9px; padding: 9px 13px; margin: -4px 0 14px;
+}
+.magic-result.ok { background: color-mix(in srgb, var(--ok) 10%, transparent); color: var(--ok); font-weight: 600; }
+.magic-result.err { background: color-mix(in srgb, var(--warn) 10%, transparent); color: var(--warn); }
+
+/* ---------- share ---------- */
+.share-btn {
+  margin-left: auto; padding: 5px 13px; font-size: 0.76rem; font-weight: 700;
+  border: 1px solid var(--line); border-radius: 999px; background: var(--card);
+  color: var(--muted-solid); cursor: pointer; font-family: inherit;
+  text-transform: none; letter-spacing: 0;
+  transition: border-color 0.12s, color 0.12s;
+}
+.share-btn:hover { border-color: var(--accent); color: var(--accent); }
+.share-box { max-width: 480px; }
+.share-sub { font-size: 0.87rem; color: var(--muted-solid); margin-bottom: 14px; }
+.share-row { display: flex; gap: 8px; }
+.share-url {
+  flex: 1; min-width: 0; padding: 10px 12px; font-size: 0.82rem;
+  border: 1px solid var(--line); border-radius: 9px; background: var(--bg); color: var(--text);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+.share-qr { text-align: center; margin-top: 16px; }
+.share-qr img { border: 8px solid #fff; border-radius: 10px; }
 .size-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; grid-column: 1 / -1; }
 #preset-note {
   display: none; grid-column: 1 / -1; font-size: 0.84rem; color: var(--muted-solid);

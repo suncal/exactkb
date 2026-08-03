@@ -188,6 +188,164 @@
     els.presetNote.style.display = p.note ? "block" : "none";
   }
 
+  // ---------- requirement parser (the "paste what the form said" magic box) ----------
+  function parseRequirement(text) {
+    let t = " " + text.toLowerCase().replace(/,/g, " ") + " ";
+    // normalize negated-maximum phrasings so "more than" can't read as a minimum
+    t = t.replace(/(not?\s+(?:be\s+)?(?:more|greater|larger|bigger)\s+than|not\s+to\s+exceed|must\s+not\s+exceed|no\s+more\s+than|not\s+exceeding|should\s+not\s+exceed|cannot\s+exceed)/g, " max ");
+    const out = {};
+    // dimensions: 200x230, 200 × 230 px, 3.5 x 4.5 cm, 2x2 in
+    const dim = t.match(/(\d+(?:\.\d+)?)\s*[x×*]\s*(\d+(?:\.\d+)?)\s*(px|pixels?|cm|mm|inch(?:es)?|in\b)?/);
+    if (dim && !/kb|mb/.test(dim[0])) {
+      const unit = (dim[3] || "px").slice(0, 2);
+      const toPx = (v) =>
+        unit === "cm" ? Math.round((v / 2.54) * 300)
+        : unit === "mm" ? Math.round((v / 25.4) * 300)
+        : unit === "in" ? Math.round(v * 300)
+        : Math.round(v);
+      const w = toPx(parseFloat(dim[1])), h = toPx(parseFloat(dim[2]));
+      if (w >= 16 && h >= 16 && w <= 20000 && h <= 20000) { out.width = w; out.height = h; }
+    }
+    // size range: "10-20 kb", "between 20 and 50 kb", "20 to 300 kb"
+    const range = t.match(/(\d+(?:\.\d+)?)\s*(kb|mb)?\s*(?:-|–|—|to|and)\s*(\d+(?:\.\d+)?)\s*(kb|mb)/);
+    if (range) {
+      const unit2 = range[4] === "mb" ? 1024 : 1;
+      const unit1 = range[2] ? (range[2] === "mb" ? 1024 : 1) : unit2;
+      const a = parseFloat(range[1]) * unit1, b = parseFloat(range[3]) * unit2;
+      out.minKB = Math.min(a, b); out.maxKB = Math.max(a, b);
+    } else {
+      const sizes = [...t.matchAll(/(\d+(?:\.\d+)?)\s*(kb|mb)\b/g)]
+        .map((m) => ({ v: parseFloat(m[1]) * (m[2] === "mb" ? 1024 : 1), idx: m.index }));
+      if (sizes.length >= 2) {
+        const vals = sizes.map((s) => s.v).sort((x, y) => x - y);
+        out.minKB = vals[0]; out.maxKB = vals[vals.length - 1];
+      } else if (sizes.length === 1) {
+        const before = t.slice(Math.max(0, sizes[0].idx - 40), sizes[0].idx);
+        if (/(min|at ?least|minimum|more than|greater|above|over)\s*[^.]*$/.test(before)) out.minKB = sizes[0].v;
+        else out.maxKB = sizes[0].v;
+      }
+    }
+    const fm = t.match(/\b(jpe?g|jpg|png|webp)\b/);
+    if (fm) out.format = fm[1].startsWith("j") ? "jpeg" : fm[1] === "png" ? "png" : "webp";
+    return out;
+  }
+
+  function applyParsed(p) {
+    if (p.minKB != null) els.minKB.value = Math.round(p.minKB * 10) / 10;
+    if (p.maxKB != null) els.maxKB.value = Math.round(p.maxKB * 10) / 10;
+    if (p.width != null) els.width.value = p.width;
+    if (p.height != null) els.height.value = p.height;
+    if (p.format) els.format.value = p.format;
+  }
+
+  function parsedSummary(p) {
+    const bits = [];
+    if (p.minKB != null && p.maxKB != null) bits.push(`${p.minKB}–${p.maxKB} KB`);
+    else if (p.maxKB != null) bits.push(`max ${p.maxKB} KB`);
+    else if (p.minKB != null) bits.push(`min ${p.minKB} KB`);
+    if (p.width) bits.push(`${p.width}×${p.height} px`);
+    if (p.format) bits.push(p.format.toUpperCase());
+    return bits.join(" · ");
+  }
+
+  function wireMagicBox() {
+    const input = $("#magic"), btn = $("#magic-apply"), result = $("#magic-result");
+    if (!input || !btn) return;
+    const run = () => {
+      const text = input.value.trim();
+      if (!text) return;
+      const p = parseRequirement(text);
+      const summary = parsedSummary(p);
+      if (summary) {
+        applyParsed(p);
+        result.textContent = `✓ Understood: ${summary} — settings filled in below.`;
+        result.className = "magic-result ok";
+      } else {
+        result.textContent = "Couldn't find a size in that text — look for something like \"max 50 KB\" or \"200×230 px\" and paste that part.";
+        result.className = "magic-result err";
+      }
+      result.style.display = "block";
+    };
+    btn.addEventListener("click", run);
+    input.addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); run(); } });
+    input.addEventListener("paste", () => setTimeout(run, 50));
+  }
+
+  // ---------- shareable requirement links ----------
+  const SHARE_BASE = "https://suncal.github.io/exactkb/";
+  function currentShareUrl() {
+    const p = new URLSearchParams();
+    if (els.minKB.value) p.set("min", els.minKB.value);
+    if (els.maxKB.value) p.set("max", els.maxKB.value);
+    if (els.width.value) p.set("w", els.width.value);
+    if (els.height.value) p.set("h", els.height.value);
+    if (els.format.value !== "jpeg") p.set("fmt", els.format.value);
+    return SHARE_BASE + "?" + p.toString() + "#tool";
+  }
+
+  async function openShareModal() {
+    const url = currentShareUrl();
+    let modal = document.getElementById("share-modal");
+    if (!modal) {
+      modal = document.createElement("div");
+      modal.id = "share-modal";
+      modal.className = "compare-modal";
+      modal.innerHTML = `
+        <div class="compare-box share-box" role="dialog" aria-label="Share this requirement">
+          <div class="compare-head"><span>Share this requirement</span><button class="compare-close" aria-label="Close">✕</button></div>
+          <p class="share-sub">Send this link to anyone — ExactKB opens with these exact settings already filled in. Perfect for classmates, family, or clients.</p>
+          <div class="share-row"><input class="share-url" readonly><button class="btn btn-download share-copy" type="button">Copy</button></div>
+          <div class="share-qr" aria-label="QR code"></div>
+        </div>`;
+      modal.addEventListener("click", (e) => {
+        if (e.target === modal || e.target.classList.contains("compare-close")) modal.style.display = "none";
+      });
+      modal.querySelector(".share-copy").addEventListener("click", async () => {
+        const btn = modal.querySelector(".share-copy");
+        try {
+          await navigator.clipboard.writeText(modal.querySelector(".share-url").value);
+          btn.textContent = "Copied ✓";
+        } catch (_) {
+          modal.querySelector(".share-url").select();
+          document.execCommand("copy");
+          btn.textContent = "Copied ✓";
+        }
+        setTimeout(() => { btn.textContent = "Copy"; }, 1800);
+      });
+      document.body.appendChild(modal);
+    }
+    modal.querySelector(".share-url").value = url;
+    const qrBox = modal.querySelector(".share-qr");
+    qrBox.innerHTML = "";
+    try {
+      await loadScriptOnce("vendor/qrcode.js");
+      const qr = window.qrcode(0, "M");
+      qr.addData(url);
+      qr.make();
+      qrBox.innerHTML = qr.createImgTag(4, 8);
+    } catch (_) { /* QR optional */ }
+    modal.style.display = "flex";
+  }
+
+  function applyUrlParams() {
+    const sp = new URLSearchParams(location.search);
+    if (!sp.has("max") && !sp.has("min") && !sp.has("w")) return;
+    const p = {
+      minKB: sp.has("min") ? parseFloat(sp.get("min")) : null,
+      maxKB: sp.has("max") ? parseFloat(sp.get("max")) : null,
+      width: sp.has("w") ? parseInt(sp.get("w"), 10) : null,
+      height: sp.has("h") ? parseInt(sp.get("h"), 10) : null,
+      format: ["png", "webp"].includes(sp.get("fmt")) ? sp.get("fmt") : null,
+    };
+    applyParsed(p);
+    const result = $("#magic-result");
+    if (result) {
+      result.textContent = `✓ Shared requirement loaded: ${parsedSummary(p) || "custom settings"}`;
+      result.className = "magic-result ok";
+      result.style.display = "block";
+    }
+  }
+
   // ---------- file intake ----------
   function wireDropZone() {
     const drop = els.drop;
@@ -737,6 +895,10 @@
   document.addEventListener("DOMContentLoaded", () => {
     populatePresets();
     wireDropZone();
+    wireMagicBox();
+    applyUrlParams();
+    const shareBtn = document.getElementById("share-btn");
+    if (shareBtn) shareBtn.addEventListener("click", openShareModal);
     const y = document.getElementById("year");
     if (y) y.textContent = new Date().getFullYear();
   });

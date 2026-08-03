@@ -438,7 +438,7 @@ def render_pdf(slug, p):
   <title>{html.escape(p["title"])}</title>
   <meta name="description" content="{html.escape(p["desc"])}">
   <link rel="canonical" href="{BASE_URL}/{slug}/">
-  <link rel="stylesheet" href="../style.css?v=9">
+  <link rel="stylesheet" href="../style.css?v=10">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🎯</text></svg>">
   <meta property="og:title" content="{html.escape(p["title"])}">
   <meta property="og:description" content="{html.escape(p["desc"])}">
@@ -467,8 +467,8 @@ def render_pdf(slug, p):
       <div class="step-label"><span class="n">1</span> Set your limit</div>
       <div class="controls">
         <div class="field full">
-          <label for="max-kb">Max size (KB) *</label>
-          <input type="number" id="max-kb" min="10" placeholder="e.g. 200" value="{p["maxKB"]}">
+          <label for="max-kb">Max size *</label>
+          <div class="input-wrap"><input type="number" id="max-kb" min="10" placeholder="e.g. 200" value="{p["maxKB"]}"><span class="unit">KB</span></div>
         </div>
       </div>
 
@@ -511,7 +511,7 @@ def render_pdf(slug, p):
   </footer>
 
   <script>window.PDF_PRESET = {preset_json};</script>
-  <script src="../pdf-app.js?v=9"></script>
+  <script src="../pdf-app.js?v=10"></script>
 </body>
 </html>
 """
@@ -535,7 +535,7 @@ def render(slug, p):
   <title>{html.escape(p["title"])}</title>
   <meta name="description" content="{html.escape(p["desc"])}">
   <link rel="canonical" href="{BASE_URL}/{slug}/">
-  <link rel="stylesheet" href="../style.css?v=9">
+  <link rel="stylesheet" href="../style.css?v=10">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🎯</text></svg>">
   <meta property="og:title" content="{html.escape(p["title"])}">
   <meta property="og:description" content="{html.escape(p["desc"])}">
@@ -561,7 +561,13 @@ def render(slug, p):
     </section>
 
     <section class="tool" id="tool">
-      <div class="step-label"><span class="n">1</span> Set your target</div>
+      <div class="step-label"><span class="n">1</span> Set your target <button id="share-btn" class="share-btn" type="button">🔗 Share this requirement</button></div>
+      <div class="magic">
+        <div class="magic-icon">✨</div>
+        <input id="magic" type="text" placeholder='Paste what the form said — e.g. "Photo must be 20–50 KB and 200×230 pixels"'>
+        <button id="magic-apply" class="magic-btn" type="button">Auto-fill</button>
+      </div>
+      <p id="magic-result" class="magic-result"></p>
       <div class="controls">
         <div class="field">
           <label for="country">Country / region</label>
@@ -573,20 +579,20 @@ def render(slug, p):
         </div>
         <div class="size-row">
           <div class="field">
-            <label for="min-kb">Min size (KB, optional)</label>
-            <input type="number" id="min-kb" min="1" placeholder="e.g. 20">
+            <label for="min-kb">Min size</label>
+            <div class="input-wrap"><input type="number" id="min-kb" min="1" placeholder="optional"><span class="unit">KB</span></div>
           </div>
           <div class="field">
-            <label for="max-kb">Max size (KB) *</label>
-            <input type="number" id="max-kb" min="1" placeholder="e.g. 50">
+            <label for="max-kb">Max size *</label>
+            <div class="input-wrap"><input type="number" id="max-kb" min="1" placeholder="e.g. 50"><span class="unit">KB</span></div>
           </div>
           <div class="field">
-            <label for="out-width">Width px (optional)</label>
-            <input type="number" id="out-width" min="16" placeholder="auto">
+            <label for="out-width">Width</label>
+            <div class="input-wrap"><input type="number" id="out-width" min="16" placeholder="auto"><span class="unit">PX</span></div>
           </div>
           <div class="field">
-            <label for="out-height">Height px (optional)</label>
-            <input type="number" id="out-height" min="16" placeholder="auto">
+            <label for="out-height">Height</label>
+            <div class="input-wrap"><input type="number" id="out-height" min="16" placeholder="auto"><span class="unit">PX</span></div>
           </div>
         </div>
         <div class="field">
@@ -648,8 +654,8 @@ def render(slug, p):
   </footer>
 
   <script>window.PAGE_PRESET = {preset_json};</script>
-  <script src="../presets.js?v=9"></script>
-  <script src="../app.js?v=9"></script>
+  <script src="../presets.js?v=10"></script>
+  <script src="../app.js?v=10"></script>
 </body>
 </html>
 """
