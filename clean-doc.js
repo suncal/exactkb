@@ -276,6 +276,33 @@
     throw new Error(`Couldn't fit under ${maxKB} KB while keeping the text readable. Try a higher limit.`);
   }
 
+  // ---------- before/after compare modal ----------
+  function openCompare(beforeUrl, afterUrl, beforeLabel, afterLabel) {
+    let modal = document.getElementById("compare-modal");
+    if (!modal) {
+      modal = document.createElement("div");
+      modal.id = "compare-modal";
+      modal.className = "compare-modal";
+      modal.innerHTML = `
+        <div class="compare-box" role="dialog" aria-label="Before and after comparison">
+          <div class="compare-head"><span>Before / After</span><button class="compare-close" aria-label="Close">✕</button></div>
+          <div class="compare-grid">
+            <figure><img class="cmp-before" alt="original"><figcaption></figcaption></figure>
+            <figure><img class="cmp-after" alt="cleaned"><figcaption></figcaption></figure>
+          </div>
+        </div>`;
+      modal.addEventListener("click", (e) => {
+        if (e.target === modal || e.target.classList.contains("compare-close")) modal.style.display = "none";
+      });
+      document.body.appendChild(modal);
+    }
+    modal.querySelector(".cmp-before").src = beforeUrl;
+    modal.querySelector(".cmp-after").src = afterUrl;
+    modal.querySelectorAll("figcaption")[0].textContent = beforeLabel;
+    modal.querySelectorAll("figcaption")[1].textContent = afterLabel;
+    modal.style.display = "flex";
+  }
+
   // ---------- UI ----------
   function fmtKB(bytes) {
     return bytes >= 1024 * 1024
@@ -310,6 +337,15 @@
         const img = document.createElement("img");
         img.src = url; img.alt = "cleaned preview";
         thumb.appendChild(img);
+        let beforeUrl = null;
+        try { beforeUrl = URL.createObjectURL(srcFile); } catch (_) {}
+        if (beforeUrl) {
+          thumb.classList.add("thumb-compare");
+          thumb.title = "Click to compare before / after";
+          thumb.addEventListener("click", () =>
+            openCompare(beforeUrl, url, `Original · ${fmtKB(srcFile.size)}`, `Cleaned · ${fmtKB(out.blob.size)}`)
+          );
+        }
         root.querySelector(".result-status").textContent = "Cleaned ✓";
         root.querySelector(".result-meta").textContent =
           `${fmtKB(srcFile.size)} → ${fmtKB(out.blob.size)} · ${out.canvas.width}×${out.canvas.height}px` +

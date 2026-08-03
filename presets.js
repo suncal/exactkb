@@ -136,13 +136,13 @@ window.EXACTKB_PRESETS = [
   {
     id: "us-visa-photo", country: "us",
     label: "US Visa DS-160 photo (600×600, ≤ 240 KB)",
-    minKB: null, maxKB: 240, width: 600, height: 600, format: "jpeg",
+    minKB: null, maxKB: 240, width: 600, height: 600, format: "jpeg", dpi: 300,
     note: "DS-160 digital photo: square JPEG, 600×600 px minimum, max 240 KB. Verify at travel.state.gov."
   },
   {
     id: "us-dv-lottery", country: "us",
     label: "DV Lottery (Green Card) photo (600×600, ≤ 240 KB)",
-    minKB: null, maxKB: 240, width: 600, height: 600, format: "jpeg",
+    minKB: null, maxKB: 240, width: 600, height: 600, format: "jpeg", dpi: 300,
     note: "Diversity Visa entry photo: JPEG exactly 600×600 px, max 240 KB. Verify at dvprogram.state.gov."
   },
   {
@@ -154,7 +154,7 @@ window.EXACTKB_PRESETS = [
   {
     id: "us-passport-photo", country: "us",
     label: "US Passport photo (2×2 in, 600×600 digital)",
-    minKB: null, maxKB: 240, width: 600, height: 600, format: "jpeg",
+    minKB: null, maxKB: 240, width: 600, height: 600, format: "jpeg", dpi: 300,
     note: "US passport photo is 2×2 inches; the digital tool expects square 600×600 to 1200×1200 px. Verify at travel.state.gov."
   },
 
@@ -162,7 +162,7 @@ window.EXACTKB_PRESETS = [
   {
     id: "uk-passport-photo", country: "uk",
     label: "UK Passport digital photo (750×950 min, 50 KB–10 MB)",
-    minKB: 50, maxKB: 10000, width: 750, height: 950, format: "jpeg",
+    minKB: 50, maxKB: 10000, width: 750, height: 950, format: "jpeg", dpi: 300,
     note: "GOV.UK digital passport photo: at least 750×950 px, between 50 KB and 10 MB. Verify at gov.uk."
   },
   {
@@ -176,7 +176,7 @@ window.EXACTKB_PRESETS = [
   {
     id: "schengen-photo", country: "eu",
     label: "Schengen visa photo (35×45 mm, ≤ 1 MB typical)",
-    minKB: null, maxKB: 1000, width: 827, height: 1063, format: "jpeg",
+    minKB: null, maxKB: 1000, width: 827, height: 1063, format: "jpeg", dpi: 300,
     note: "Schengen photo is 35×45 mm (≈827×1063 px at 600 dpi). Portal upload limits vary by country — verify on your consulate's portal."
   },
   {
@@ -196,7 +196,7 @@ window.EXACTKB_PRESETS = [
   {
     id: "ca-visa-photo", country: "ca",
     label: "Canada visa photo (420×540, ≤ 4 MB)",
-    minKB: null, maxKB: 4000, width: 420, height: 540, format: "jpeg",
+    minKB: null, maxKB: 4000, width: 420, height: 540, format: "jpeg", dpi: 300,
     note: "Canada visa digital photo: minimum 420×540 px. Verify at canada.ca."
   },
 
@@ -210,7 +210,7 @@ window.EXACTKB_PRESETS = [
   {
     id: "au-passport-photo", country: "au",
     label: "Australia passport photo (35×45 mm print spec)",
-    minKB: null, maxKB: 2000, width: 827, height: 1063, format: "jpeg",
+    minKB: null, maxKB: 2000, width: 827, height: 1063, format: "jpeg", dpi: 300,
     note: "Australian passport photos are 35×45 mm; digital services vary. Verify at passports.gov.au."
   },
 

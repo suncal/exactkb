@@ -136,6 +136,7 @@
   // ---------- presets ----------
   const presets = window.EXACTKB_PRESETS || [];
   const countries = window.EXACTKB_COUNTRIES || [];
+  let currentDpi = null; // set by print-photo presets; stamped into JPEG output
 
   function fillPresetList(countryId, selectId) {
     els.preset.innerHTML = "";
@@ -177,6 +178,7 @@
     });
   }
   function applyPresetValues(p) {
+    currentDpi = p.dpi || null;
     els.minKB.value = p.minKB ?? "";
     els.maxKB.value = p.maxKB ?? "";
     els.width.value = p.width ?? "";
@@ -235,6 +237,9 @@
           throw new Error("This is a PDF — use the PDF compressor instead (link below the drop zone).");
         }
         const out = await compressToTarget(file, settings, (msg) => card.setStatus(msg));
+        if (settings.dpi && out.blob.type === "image/jpeg") {
+          out.blob = await stampJpegDpi(out.blob, settings.dpi);
+        }
         card.finish(file, out, settings);
       } catch (err) {
         card.fail(err.message || String(err));
@@ -251,7 +256,7 @@
     const format = els.format.value; // "jpeg" | "png"
     if (!maxKB) return { error: "Set a maximum size in KB — that's the number the upload form gives you." };
     if (minKB && minKB >= maxKB) return { error: "Minimum KB must be smaller than maximum KB." };
-    return { minKB, maxKB, width, height, format };
+    return { minKB, maxKB, width, height, format, dpi: format === "jpeg" ? currentDpi : null };
   }
 
   // ---------- engine ----------
@@ -511,6 +516,127 @@
     return inWindow;
   }
 
+  // ---------- ZIP builder (store method — JPEGs don't recompress) ----------
+  const CRC_TABLE = (() => {
+    const t = new Uint32Array(256);
+    for (let n = 0; n < 256; n++) {
+      let c = n;
+      for (let k = 0; k < 8; k++) c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1;
+      t[n] = c >>> 0;
+    }
+    return t;
+  })();
+  function crc32(u8) {
+    let c = 0xffffffff;
+    for (let i = 0; i < u8.length; i++) c = CRC_TABLE[(c ^ u8[i]) & 0xff] ^ (c >>> 8);
+    return (c ^ 0xffffffff) >>> 0;
+  }
+  async function buildZip(entries) {
+    const chunks = [], central = [];
+    let offset = 0;
+    const enc = new TextEncoder();
+    for (const e of entries) {
+      const data = new Uint8Array(await e.blob.arrayBuffer());
+      const name = enc.encode(e.name);
+      const crc = crc32(data);
+      const local = new DataView(new ArrayBuffer(30));
+      local.setUint32(0, 0x04034b50, true);
+      local.setUint16(4, 20, true);
+      local.setUint16(10, 0, true); // stored
+      local.setUint32(14, crc, true);
+      local.setUint32(18, data.length, true);
+      local.setUint32(22, data.length, true);
+      local.setUint16(26, name.length, true);
+      chunks.push(new Uint8Array(local.buffer), name, data);
+      const cd = new DataView(new ArrayBuffer(46));
+      cd.setUint32(0, 0x02014b50, true);
+      cd.setUint16(4, 20, true);
+      cd.setUint16(6, 20, true);
+      cd.setUint32(16, crc, true);
+      cd.setUint32(20, data.length, true);
+      cd.setUint32(24, data.length, true);
+      cd.setUint16(28, name.length, true);
+      cd.setUint32(42, offset, true);
+      central.push(new Uint8Array(cd.buffer), name);
+      offset += 30 + name.length + data.length;
+    }
+    const cdStart = offset;
+    let cdSize = 0;
+    for (const c of central) { chunks.push(c); cdSize += c.length; }
+    const end = new DataView(new ArrayBuffer(22));
+    end.setUint32(0, 0x06054b50, true);
+    end.setUint16(8, entries.length, true);
+    end.setUint16(10, entries.length, true);
+    end.setUint32(12, cdSize, true);
+    end.setUint32(16, cdStart, true);
+    chunks.push(new Uint8Array(end.buffer));
+    return new Blob(chunks, { type: "application/zip" });
+  }
+
+  const completed = [];
+  function registerCompleted(name, blob) {
+    completed.push({ name, blob });
+    let bar = document.getElementById("zip-bar");
+    if (!bar) {
+      bar = document.createElement("button");
+      bar.id = "zip-bar";
+      bar.className = "btn-zip";
+      bar.type = "button";
+      bar.addEventListener("click", async () => {
+        bar.textContent = "Zipping…";
+        const zip = await buildZip(completed);
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(zip);
+        a.download = "exactkb-files.zip";
+        a.click();
+        bar.textContent = `Download all ${completed.length} as .zip`;
+      });
+      els.resultsSection.querySelector("h2").after(bar);
+    }
+    bar.style.display = completed.length > 1 ? "inline-block" : "none";
+    bar.textContent = `Download all ${completed.length} as .zip`;
+  }
+
+  // ---------- before/after compare modal ----------
+  function openCompare(beforeUrl, afterUrl, beforeLabel, afterLabel) {
+    let modal = document.getElementById("compare-modal");
+    if (!modal) {
+      modal = document.createElement("div");
+      modal.id = "compare-modal";
+      modal.className = "compare-modal";
+      modal.innerHTML = `
+        <div class="compare-box" role="dialog" aria-label="Before and after comparison">
+          <div class="compare-head"><span>Before / After</span><button class="compare-close" aria-label="Close">✕</button></div>
+          <div class="compare-grid">
+            <figure><img class="cmp-before" alt="original"><figcaption></figcaption></figure>
+            <figure><img class="cmp-after" alt="compressed"><figcaption></figcaption></figure>
+          </div>
+        </div>`;
+      modal.addEventListener("click", (e) => {
+        if (e.target === modal || e.target.classList.contains("compare-close")) modal.style.display = "none";
+      });
+      document.body.appendChild(modal);
+    }
+    modal.querySelector(".cmp-before").src = beforeUrl;
+    modal.querySelector(".cmp-after").src = afterUrl;
+    modal.querySelectorAll("figcaption")[0].textContent = beforeLabel;
+    modal.querySelectorAll("figcaption")[1].textContent = afterLabel;
+    modal.style.display = "flex";
+  }
+
+  // ---------- DPI stamping (JFIF density patch — for print photo specs) ----------
+  async function stampJpegDpi(blob, dpi) {
+    const buf = new Uint8Array(await blob.arrayBuffer());
+    // APP0/JFIF segment: FF E0 len 'JFIF\0' ver units xd xd yd yd
+    if (buf[2] === 0xff && buf[3] === 0xe0 && buf[6] === 0x4a && buf[7] === 0x46) {
+      buf[13] = 1; // density units: dots per inch
+      buf[14] = (dpi >> 8) & 0xff; buf[15] = dpi & 0xff;
+      buf[16] = (dpi >> 8) & 0xff; buf[17] = dpi & 0xff;
+      return new Blob([buf], { type: "image/jpeg" });
+    }
+    return blob;
+  }
+
   // Insert JPEG COM (comment) segments after SOI to legitimately grow the file.
   async function padJpeg(blob, minBytes, maxBytes) {
     const buf = new Uint8Array(await blob.arrayBuffer());
@@ -573,6 +699,20 @@
         const img = document.createElement("img");
         img.src = url; img.alt = "compressed preview";
         thumb.appendChild(img);
+        // before/after compare (Squoosh-style, but works on every batch file)
+        let beforeUrl = null;
+        try { beforeUrl = URL.createObjectURL(srcFile); } catch (_) {}
+        if (beforeUrl) {
+          thumb.classList.add("thumb-compare");
+          thumb.title = "Click to compare before / after";
+          thumb.addEventListener("click", () =>
+            openCompare(
+              beforeUrl, url,
+              `Original · ${fmtKB(srcFile.size)}`,
+              `Compressed · ${fmtKB(blob.size)} · ${canvas.width}×${canvas.height}px`
+            )
+          );
+        }
         root.querySelector(".result-status").textContent = "Done — fits the requirement ✓";
         root.querySelector(".result-meta").textContent =
           `${fmtKB(srcFile.size)} → ${fmtKB(blob.size)} · ${canvas.width}×${canvas.height}px` +
@@ -585,6 +725,7 @@
         a.download = `${base}-${Math.round(blob.size / 1024)}kb.${ext}`;
         a.textContent = "Download";
         root.querySelector(".result-action").appendChild(a);
+        registerCompleted(a.download, blob);
       },
     };
   }
