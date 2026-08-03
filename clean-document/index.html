@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document Cleaner — Fix Old, Faded &amp; Stained Document Photos, Free &amp; Private</title>
+  <meta name="description" content="Turn a photographed or scanned document — shadowed, stained, yellowed, faded — into a clean, sharp, readable copy. 100% in your browser; documents never uploaded. Never invents content.">
+  <link rel="canonical" href="https://suncal.github.io/exactkb/clean-document/">
+  <link rel="stylesheet" href="../style.css?v=6">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🎯</text></svg>">
+  <meta property="og:title" content="Document Cleaner — Fix Old &amp; Faded Document Photos">
+  <meta property="og:description" content="Shadows, stains and yellowing removed; text sharpened. Free, private, in-browser.">
+  <meta property="og:type" content="website">
+</head>
+<body>
+  <header>
+    <div class="wrap header-inner">
+      <a class="logo" href="../"><span class="logo-mark">🎯</span>Exact<span>KB</span></a>
+      <nav class="nav">
+        <a href="../">Images</a>
+        <a href="../compress-pdf/">PDF</a>
+        <a href="./">Doc Cleaner</a>
+        <a class="nav-cta" href="#tool">Clean now</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="hero">
+      <div class="eyebrow">🔒 100% private — documents never leave your device</div>
+      <h1>Turn a rough document photo into a <em>clean, sharp</em> copy</h1>
+      <p class="sub">Shadows from your phone camera, coffee stains, yellowed paper, faded ink — gone. What's left is a crisp, readable document, exactly as written. Works on old letters, certificates, receipts, contracts and forms.</p>
+    </section>
+
+    <section class="tool" id="tool">
+      <div class="controls">
+        <div class="field">
+          <label for="clean-mode">Cleaning mode</label>
+          <select id="clean-mode">
+            <option value="clean" selected>Clean — grayscale, shadows &amp; stains removed</option>
+            <option value="bw">Black &amp; white — maximum text contrast</option>
+            <option value="color">Color — keep colors, remove shadows &amp; tint</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="out-format">Output format</label>
+          <select id="out-format">
+            <option value="jpeg" selected>JPG</option>
+            <option value="png">PNG</option>
+          </select>
+        </div>
+        <div class="field full">
+          <label for="max-kb">Fit to a size limit? (KB, optional)</label>
+          <input type="number" id="max-kb" min="10" placeholder="e.g. 200 — leave empty for best quality">
+        </div>
+      </div>
+
+      <div class="drop" id="drop" role="button" tabindex="0" aria-label="Choose or drop document photos">
+        <div class="big">📄✨</div>
+        <div class="main">Drop document photos here, paste, or click to choose</div>
+        <div class="hint">JPG · PNG · HEIC (iPhone) · WebP — multiple files OK · nothing is uploaded</div>
+      </div>
+      <input type="file" id="file-input" accept="image/*,.heic,.heif" multiple hidden>
+
+      <div id="results-section">
+        <h2>Your documents</h2>
+        <div id="results"></div>
+      </div>
+    </section>
+
+    <section class="content">
+      <h2>What it fixes</h2>
+      <ul>
+        <li><strong>Shadows and uneven lighting</strong> — the gray gradient your phone casts across every page.</li>
+        <li><strong>Yellowed or aged paper</strong> — old documents come back to white.</li>
+        <li><strong>Stains, smudges and background noise</strong> — faded into the background while ink stays dark.</li>
+        <li><strong>Faded, low-contrast text</strong> — stretched back to crisp dark-on-white and sharpened.</li>
+      </ul>
+
+      <h2>What it will never do — on purpose</h2>
+      <p>Document Cleaner <strong>never invents content</strong>. If a corner is torn away or a word is truly gone, it stays gone — this tool enhances what your camera captured, it doesn't guess at what's missing. That's a deliberate guarantee: every character in the output is authentically from your original, which matters when the document is a certificate, a contract, or evidence. AI tools that "reconstruct" missing text can hallucinate plausible-looking but wrong content; for real documents, that's worse than a gap.</p>
+
+      <h2>Private by construction</h2>
+      <p>Like every ExactKB tool, cleaning happens entirely in your browser. Your certificates, IDs, contracts and letters are never uploaded to any server — load the page, turn off the internet, and it still works.</p>
+
+      <h2>FAQ</h2>
+      <p class="faq-q">Can it fix blurry photos?</p>
+      <p>It sharpens soft text noticeably, but heavy motion blur can't be honestly reversed. Retake the photo if you can — steady the phone against something, and use natural light from a window.</p>
+      <p class="faq-q">Which mode should I use?</p>
+      <p>Clean (grayscale) is right for almost everything. Black &amp; white is best for text-only pages you'll print or fax. Color keeps stamps, seals and signatures in ink color while still removing shadows and tint.</p>
+      <p class="faq-q">Can I also make it fit an upload limit?</p>
+      <p>Yes — enter the KB limit and the cleaned document is fitted to it, using the same exact-size engine as the main compressor.</p>
+
+      <h2>More tools</h2>
+      <div class="related">
+        <a href="../">Image compressor (exact KB)</a>
+        <a href="../compress-pdf/">PDF compressor</a>
+        <a href="../heic-to-jpg/">HEIC to JPG</a>
+        <a href="../compress-image-to-50kb/">Compress to 50 KB</a>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <div class="footer-bottom">
+        <div>© <span id="year"></span> ExactKB · <a href="../">Home</a> · <a href="../privacy/">Privacy</a> · <a href="../terms/">Terms</a> · Files are processed on your device and never uploaded. Not affiliated with any government agency or portal.</div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../clean-doc.js?v=6"></script>
+</body>
+</html>

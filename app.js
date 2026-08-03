@@ -273,42 +273,152 @@
     return new Promise((resolve) => canvas.toBlob(resolve, type, quality));
   }
 
+  // ---------- clarity engine ----------
+  // Classify content: documents/text get text-optimized processing and a
+  // higher quality floor; photos trade resolution before quality.
+  function sampleAnalysis(bitmap) {
+    const sw = 256, sh = Math.max(1, Math.round((bitmap.height * 256) / bitmap.width));
+    const c = document.createElement("canvas");
+    c.width = sw; c.height = sh;
+    const ctx = c.getContext("2d");
+    ctx.drawImage(bitmap, 0, 0, sw, sh);
+    const d = ctx.getImageData(0, 0, sw, sh).data;
+    const n = sw * sh;
+    const luma = new Float32Array(n);
+    let satSum = 0;
+    for (let i = 0; i < n; i++) {
+      const r = d[i * 4], g = d[i * 4 + 1], b = d[i * 4 + 2];
+      satSum += Math.max(r, g, b) - Math.min(r, g, b);
+      luma[i] = 0.299 * r + 0.587 * g + 0.114 * b;
+    }
+    let edges = 0;
+    for (let y = 0; y < sh; y++) {
+      for (let x = 1; x < sw; x++) {
+        if (Math.abs(luma[y * sw + x] - luma[y * sw + x - 1]) > 40) edges++;
+      }
+    }
+    return { isDoc: satSum / n < 28 && edges / n > 0.02 };
+  }
+
+  // Grayscale + percentile contrast stretch — makes scanned/photographed
+  // text dark-on-white and cheap to encode.
+  function enhanceDoc(canvas) {
+    const ctx = canvas.getContext("2d");
+    const w = canvas.width, h = canvas.height, n = w * h;
+    const img = ctx.getImageData(0, 0, w, h);
+    const d = img.data;
+    const lum = new Uint8ClampedArray(n);
+    const hist = new Uint32Array(256);
+    for (let i = 0; i < n; i++) {
+      const v = (0.299 * d[i * 4] + 0.587 * d[i * 4 + 1] + 0.114 * d[i * 4 + 2]) | 0;
+      lum[i] = v; hist[v]++;
+    }
+    const cut = n * 0.02;
+    let lo = 0, hi = 255, acc = 0;
+    for (let v = 0; v < 256; v++) { acc += hist[v]; if (acc > cut) { lo = v; break; } }
+    acc = 0;
+    for (let v = 255; v >= 0; v--) { acc += hist[v]; if (acc > cut) { hi = v; break; } }
+    const range = Math.max(24, hi - lo);
+    for (let i = 0; i < n; i++) {
+      const v = ((lum[i] - lo) * 255) / range;
+      d[i * 4] = d[i * 4 + 1] = d[i * 4 + 2] = v;
+    }
+    ctx.putImageData(img, 0, 0);
+  }
+
+  // Light unsharp mask — restores edge crispness lost to downscaling.
+  function sharpen(canvas, k) {
+    const ctx = canvas.getContext("2d");
+    const w = canvas.width, h = canvas.height;
+    const src = ctx.getImageData(0, 0, w, h);
+    const out = ctx.createImageData(w, h);
+    const s = src.data, o = out.data;
+    for (let y = 0; y < h; y++) {
+      for (let x = 0; x < w; x++) {
+        const i = (y * w + x) * 4;
+        for (let c = 0; c < 3; c++) {
+          const up = y > 0 ? s[i - w * 4 + c] : s[i + c];
+          const dn = y < h - 1 ? s[i + w * 4 + c] : s[i + c];
+          const lf = x > 0 ? s[i - 4 + c] : s[i + c];
+          const rt = x < w - 1 ? s[i + 4 + c] : s[i + c];
+          const v = s[i + c] * (1 + 4 * k) - k * (up + dn + lf + rt);
+          o[i + c] = v < 0 ? 0 : v > 255 ? 255 : v;
+        }
+        o[i + 3] = 255;
+      }
+    }
+    ctx.putImageData(out, 0, 0);
+  }
+
   async function compressToTarget(file, s, onStatus) {
     const bitmap = await loadBitmap(file, onStatus);
     const maxBytes = Math.floor(s.maxKB * 1024);
     const minBytes = s.minKB ? Math.ceil(s.minKB * 1024) : 0;
     const type = s.format === "png" ? "image/png" : s.format === "webp" ? "image/webp" : "image/jpeg";
+    const locked = !!(s.width && s.height);
 
-    let scale = 1.0;
     let best = null;
 
-    for (let round = 0; round < 12; round++) {
-      onStatus(`Compressing… (pass ${round + 1})`);
-      const canvas = drawToCanvas(bitmap, s.width, s.height, scale);
-
-      if (type === "image/png") {
+    if (type === "image/png") {
+      // PNG is lossless — dimensions are the only lever
+      let scale = 1.0;
+      for (let round = 0; round < 12; round++) {
+        onStatus(`Compressing… (pass ${round + 1})`);
+        const canvas = drawToCanvas(bitmap, s.width, s.height, locked ? 1 : scale);
         const blob = await canvasToBlob(canvas, "image/png");
         if (blob.size <= maxBytes) { best = { blob, canvas }; break; }
-      } else {
-        // binary-search encode quality (JPEG/WebP) at this scale
-        let lo = 0.02, hi = 0.97, fit = null;
-        for (let i = 0; i < 9; i++) {
-          const q = (lo + hi) / 2;
-          const blob = await canvasToBlob(canvas, type, q);
-          if (!blob || blob.type !== type) {
+        if (locked) {
+          throw new Error(`Can't reach ${s.maxKB} KB at exactly ${s.width}×${s.height}px in PNG. Try JPG format or a higher KB limit.`);
+        }
+        scale *= 0.8;
+        if (Math.min(bitmap.width, bitmap.height) * scale < 32) break;
+      }
+    } else {
+      // Clarity engine: never let quality collapse into mush. Hold a quality
+      // floor and trade resolution first — a smaller sharp image always beats
+      // a big blurry one. Documents get text-optimized processing and a
+      // higher floor; floors relax only when there is no other way to fit.
+      const analysis = sampleAnalysis(bitmap);
+      // [qualityFloor, minDimension] pairs: each relaxation step allows both a
+      // lower floor AND smaller dimensions, so results degrade toward
+      // small-and-sharp — never large-and-mushy.
+      const floors = analysis.isDoc
+        ? [[0.8, 500], [0.62, 380], [0.45, 280], [0.32, 200], [0.22, 120], [0.1, 48], [0.02, 32]]
+        : [[0.62, 140], [0.45, 110], [0.3, 90], [0.15, 48], [0.02, 32]];
+
+      outer:
+      for (const [qFloor, minDim] of floors) {
+        let scale = 1.0;
+        for (let round = 0; round < 20; round++) {
+          onStatus(`Optimizing… (${Math.round((locked ? 1 : scale) * 100)}% size, quality ≥ ${Math.round(qFloor * 100)}%)`);
+          const canvas = drawToCanvas(bitmap, s.width, s.height, locked ? 1 : scale);
+          const effScale = canvas.width / (locked ? canvas.width : bitmap.width);
+          if (analysis.isDoc) { enhanceDoc(canvas); sharpen(canvas, 0.35); }
+          else if (effScale < 0.8) { sharpen(canvas, 0.2); }
+
+          const atFloor = await canvasToBlob(canvas, type, qFloor);
+          if (!atFloor || atFloor.type !== type) {
             throw new Error("Your browser can't encode " + s.format.toUpperCase() + " — choose JPG output instead.");
           }
-          if (blob.size > maxBytes) hi = q; else { fit = { blob, canvas, q }; lo = q; }
+          if (atFloor.size <= maxBytes) {
+            // fits at the floor — push quality as high as the budget allows
+            let lo = qFloor, hi = 0.95, fit = { blob: atFloor, q: qFloor };
+            for (let i = 0; i < 7; i++) {
+              const q = (lo + hi) / 2;
+              const blob = await canvasToBlob(canvas, type, q);
+              if (blob.size > maxBytes) hi = q; else { fit = { blob, q }; lo = q; }
+            }
+            best = { blob: fit.blob, canvas, q: fit.q };
+            break outer;
+          }
+          if (locked) break; // dimensions fixed — relax the floor instead
+          scale *= 0.85;
+          if (Math.min(bitmap.width, bitmap.height) * scale < minDim) break;
         }
-        if (fit) { best = fit; break; }
       }
-      // still too big even at lowest quality — shrink dimensions and retry.
-      // If exact W×H was requested we can't shrink; bail with honest error.
-      if (s.width && s.height) {
+      if (!best && locked) {
         throw new Error(`Can't reach ${s.maxKB} KB at exactly ${s.width}×${s.height}px in ${s.format.toUpperCase()}. Try JPG format or a higher KB limit.`);
       }
-      scale *= 0.8;
-      if (Math.min(bitmap.width, bitmap.height) * scale < 32) break;
     }
 
     if (!best) throw new Error(`Couldn't fit under ${s.maxKB} KB. Try JPG output or relax the limit.`);
@@ -401,7 +511,8 @@
         thumb.appendChild(img);
         root.querySelector(".result-status").textContent = "Done — fits the requirement ✓";
         root.querySelector(".result-meta").textContent =
-          `${fmtKB(srcFile.size)} → ${fmtKB(blob.size)} · ${canvas.width}×${canvas.height}px`;
+          `${fmtKB(srcFile.size)} → ${fmtKB(blob.size)} · ${canvas.width}×${canvas.height}px` +
+          (out.q ? ` · quality ${Math.round(out.q * 100)}%` : "");
         const a = document.createElement("a");
         a.className = "btn btn-download";
         a.href = url;

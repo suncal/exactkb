@@ -121,6 +121,50 @@
     return new Blob([bytes], { type: "application/pdf" });
   }
 
+  // Grayscale + contrast stretch for scanned/text pages (cheap bytes, crisp text)
+  function enhancePage(canvas) {
+    const ctx = canvas.getContext("2d");
+    const w = canvas.width, h = canvas.height, n = w * h;
+    const img = ctx.getImageData(0, 0, w, h);
+    const d = img.data;
+    const lum = new Uint8ClampedArray(n);
+    const hist = new Uint32Array(256);
+    for (let i = 0; i < n; i++) {
+      const v = (0.299 * d[i * 4] + 0.587 * d[i * 4 + 1] + 0.114 * d[i * 4 + 2]) | 0;
+      lum[i] = v; hist[v]++;
+    }
+    const cut = n * 0.02;
+    let lo = 0, hi = 255, acc = 0;
+    for (let v = 0; v < 256; v++) { acc += hist[v]; if (acc > cut) { lo = v; break; } }
+    acc = 0;
+    for (let v = 255; v >= 0; v--) { acc += hist[v]; if (acc > cut) { hi = v; break; } }
+    const range = Math.max(24, hi - lo);
+    for (let i = 0; i < n; i++) {
+      const v = ((lum[i] - lo) * 255) / range;
+      d[i * 4] = d[i * 4 + 1] = d[i * 4 + 2] = v;
+    }
+    ctx.putImageData(img, 0, 0);
+  }
+
+  function isDocPage(canvas) {
+    const ctx = canvas.getContext("2d");
+    const w = Math.min(256, canvas.width), h = Math.min(256, canvas.height);
+    const d = ctx.getImageData(0, 0, w, h).data;
+    let sat = 0;
+    const n = w * h;
+    for (let i = 0; i < n; i++) {
+      const r = d[i * 4], g = d[i * 4 + 1], b = d[i * 4 + 2];
+      sat += Math.max(r, g, b) - Math.min(r, g, b);
+    }
+    return sat / n < 28;
+  }
+
+  async function pageJpegSizes(pages, q) {
+    let total = 0;
+    for (const p of pages) total += (await canvasToJpeg(p.canvas, q)).size;
+    return total;
+  }
+
   async function compressPdf(file, maxBytes, onStatus) {
     const data = new Uint8Array(await file.arrayBuffer());
     const pdf = await window.pdfjsLib.getDocument({ data }).promise;
@@ -128,20 +172,40 @@
       throw new Error(`This PDF has ${pdf.numPages} pages — the limit is ${MAX_PAGES}. Split it first.`);
     }
 
-    const scales = [1.5, 1.1, 0.8, 0.55];
-    for (let si = 0; si < scales.length; si++) {
-      const pages = await renderPages(pdf, scales[si], onStatus);
-      // binary-search JPEG quality at this render scale
-      let lo = 0.05, hi = 0.9, fit = null;
-      for (let i = 0; i < 7; i++) {
-        const q = (lo + hi) / 2;
-        onStatus(`Compressing… (pass ${si + 1}.${i + 1})`);
-        const blob = await buildPdf(pages, q);
-        if (blob.size > maxBytes) hi = q;
-        else { fit = { blob, q }; lo = q; }
+    // Clarity engine: hold a quality floor, trade render resolution first;
+    // relax the floor only when nothing fits. Text pages get grayscale +
+    // contrast so they stay readable at small sizes.
+    const floors = [0.72, 0.55, 0.38, 0.2, 0.08];
+    const scales = [1.5, 1.2, 0.95, 0.75, 0.6, 0.45];
+    const overhead = 6000 + 2200 * pdf.numPages; // pdf-lib structure estimate
+    const cache = {};
+    let doc = null;
+
+    for (const qFloor of floors) {
+      for (const scale of scales) {
+        if (!cache[scale]) {
+          const pages = await renderPages(pdf, scale, onStatus);
+          if (doc === null) doc = isDocPage(pages[0].canvas);
+          if (doc) pages.forEach((p) => enhancePage(p.canvas));
+          cache[scale] = pages;
+        }
+        const pages = cache[scale];
+        onStatus(`Optimizing… (${Math.round(scale * 100)}% render, quality ≥ ${Math.round(qFloor * 100)}%)`);
+        if ((await pageJpegSizes(pages, qFloor)) + overhead > maxBytes) continue;
+        // fits at the floor — binary-search the best quality, then assemble
+        let lo = qFloor, hi = 0.9, q = qFloor;
+        for (let i = 0; i < 6; i++) {
+          const mid = (lo + hi) / 2;
+          if ((await pageJpegSizes(pages, mid)) + overhead > maxBytes) hi = mid;
+          else { q = mid; lo = mid; }
+        }
+        let blob = await buildPdf(pages, q);
+        while (blob.size > maxBytes && q > 0.06) {   // estimate was optimistic — nudge down
+          q = Math.max(0.05, q - 0.08);
+          blob = await buildPdf(pages, q);
+        }
+        if (blob.size <= maxBytes) return { blob, pages: pdf.numPages, q };
       }
-      if (fit) return { blob: fit.blob, pages: pdf.numPages };
-      // too big even at q≈0.05 → try a smaller render scale
     }
     throw new Error("Couldn't fit under that size — this PDF has too many pages for the limit. Try a higher KB limit or split the file.");
   }
