@@ -26,13 +26,11 @@
     return /image\/hei[cf]/.test(file.type) || /\.hei[cf]$/i.test(file.name);
   }
 
-  async function normalizeInput(file, onStatus) {
-    if (!isHeic(file)) return file;
-    onStatus("Converting HEIC…");
+  async function heicToJpeg(file) {
     await loadHeicLib();
     const blob = await window.heic2any({ blob: file, toType: "image/jpeg", quality: 0.92 });
     const jpeg = Array.isArray(blob) ? blob[0] : blob;
-    return new File([jpeg], file.name.replace(/\.hei[cf]$/i, ".jpg"), { type: "image/jpeg" });
+    return new File([jpeg], file.name.replace(/\.[^.]+$/, "") + ".jpg", { type: "image/jpeg" });
   }
 
   const els = {
@@ -139,11 +137,10 @@
       const card = makeCard(file);
       els.results.prepend(card.root);
       try {
-        if (!/^image\/(jpeg|png|webp|gif|bmp|avif|svg\+xml)/.test(file.type) && !isHeic(file) && !/\.(avif|svg)$/i.test(file.name)) {
-          throw new Error("Unsupported file type. Use JPG, PNG, WebP, HEIC, AVIF, SVG, GIF or BMP.");
+        if (file.type === "application/pdf" || /\.pdf$/i.test(file.name)) {
+          throw new Error("This is a PDF — use the PDF compressor instead (link below the drop zone).");
         }
-        const input = await normalizeInput(file, (msg) => card.setStatus(msg));
-        const out = await compressToTarget(input, settings, (msg) => card.setStatus(msg));
+        const out = await compressToTarget(file, settings, (msg) => card.setStatus(msg));
         card.finish(file, out, settings);
       } catch (err) {
         card.fail(err.message || String(err));
@@ -164,17 +161,52 @@
   }
 
   // ---------- engine ----------
-  async function loadBitmap(file) {
-    if (window.createImageBitmap) {
-      try { return await createImageBitmap(file); } catch (_) { /* fall through */ }
-    }
+  function decodeViaImg(file) {
     return new Promise((resolve, reject) => {
       const url = URL.createObjectURL(file);
       const img = new Image();
       img.onload = () => { URL.revokeObjectURL(url); resolve(img); };
-      img.onerror = () => { URL.revokeObjectURL(url); reject(new Error("Could not read this image.")); };
+      img.onerror = () => { URL.revokeObjectURL(url); reject(new Error("decode failed")); };
       img.src = url;
     });
+  }
+
+  // Decode anything the browser or our converters can read, regardless of
+  // what the file claims to be. iPhone HEICs frequently arrive renamed as
+  // .jpg after passing through Windows/WhatsApp/email — so on any decode
+  // failure we still attempt HEIC conversion before giving up.
+  async function loadBitmap(file, onStatus) {
+    const tryNative = async () => {
+      if (window.createImageBitmap) {
+        try { return await createImageBitmap(file); } catch (_) { /* fall through */ }
+      }
+      return decodeViaImg(file);
+    };
+
+    if (isHeic(file)) {
+      onStatus("Converting HEIC…");
+      try {
+        const jpeg = await heicToJpeg(file);
+        return await createImageBitmap(jpeg);
+      } catch (_) {
+        // Safari decodes HEIC natively — try that before failing
+        try { return await tryNative(); } catch (_) { /* fall through to error */ }
+        throw new Error("Couldn't convert this HEIC. Quick fix: email or WhatsApp the photo to yourself (that converts it to JPG), then drop the JPG here.");
+      }
+    }
+
+    try {
+      return await tryNative();
+    } catch (_) {
+      // Mislabeled HEIC? (common when iPhone photos pass through Windows)
+      try {
+        onStatus("Retrying as HEIC…");
+        const jpeg = await heicToJpeg(file);
+        return await createImageBitmap(jpeg);
+      } catch (_) {
+        throw new Error("Couldn't read this file as an image. Supported: JPG, PNG, HEIC, WebP, AVIF, SVG, GIF, BMP. If it came from an iPhone, email it to yourself first — that converts it to JPG.");
+      }
+    }
   }
 
   function drawToCanvas(bitmap, targetW, targetH, scale) {
@@ -212,7 +244,7 @@
   }
 
   async function compressToTarget(file, s, onStatus) {
-    const bitmap = await loadBitmap(file);
+    const bitmap = await loadBitmap(file, onStatus);
     const maxBytes = Math.floor(s.maxKB * 1024);
     const minBytes = s.minKB ? Math.ceil(s.minKB * 1024) : 0;
     const type = s.format === "png" ? "image/png" : s.format === "webp" ? "image/webp" : "image/jpeg";
