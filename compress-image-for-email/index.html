@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Compress Images for Email — Fit Under the 25 MB Limit, Free</title>
+  <meta name="description" content="Shrink photos to fit email attachment limits without ruining quality. Batch support, in-browser, private.">
+  <link rel="canonical" href="https://suncal.github.io/exactkb/compress-image-for-email/">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🎯</text></svg>">
+  <meta property="og:title" content="Compress Images for Email — Fit Under the 25 MB Limit, Free">
+  <meta property="og:description" content="Shrink photos to fit email attachment limits without ruining quality. Batch support, in-browser, private.">
+  <meta property="og:type" content="website">
+</head>
+<body>
+  <header>
+    <div class="wrap header-inner">
+      <a class="logo" href="../">Exact<span>KB</span> 🎯</a>
+      <div class="trust">100% in your browser — files never leave your device</div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="hero">
+      <h1>Compress images for email attachments</h1>
+      <p class="sub">Fit your photos under Gmail/Outlook's 25 MB cap — or make them polite 200 KB attachments.</p>
+      <div class="badges">
+        <span class="badge">✓ Exact-size targeting</span>
+        <span class="badge">🔒 Never uploaded — works offline</span>
+        <span class="badge">Free, no signup</span>
+      </div>
+    </section>
+
+    <section class="tool" id="tool">
+      <div class="controls">
+        <div class="field">
+          <label for="country">Country / region</label>
+          <select id="country" aria-label="Country or region"></select>
+        </div>
+        <div class="field">
+          <label for="preset">Preset (portal / document)</label>
+          <select id="preset" aria-label="Document preset"></select>
+        </div>
+        <div class="size-row">
+          <div class="field">
+            <label for="min-kb">Min size (KB, optional)</label>
+            <input type="number" id="min-kb" min="1" placeholder="e.g. 20">
+          </div>
+          <div class="field">
+            <label for="max-kb">Max size (KB) *</label>
+            <input type="number" id="max-kb" min="1" placeholder="e.g. 50">
+          </div>
+          <div class="field">
+            <label for="out-width">Width px (optional)</label>
+            <input type="number" id="out-width" min="16" placeholder="auto">
+          </div>
+          <div class="field">
+            <label for="out-height">Height px (optional)</label>
+            <input type="number" id="out-height" min="16" placeholder="auto">
+          </div>
+        </div>
+        <div class="field">
+          <label for="out-format">Output format</label>
+          <select id="out-format">
+            <option value="jpeg" selected>JPG (recommended — smallest)</option>
+            <option value="png">PNG</option>
+          </select>
+        </div>
+        <p id="preset-note"></p>
+      </div>
+
+      <div class="drop" id="drop" role="button" tabindex="0" aria-label="Choose or drop images">
+        <div class="big">📸</div>
+        <div class="main">Drop images here, paste, or click to choose</div>
+        <div class="hint">JPG, PNG, WebP, GIF, BMP · multiple files OK · nothing is uploaded</div>
+      </div>
+      <input type="file" id="file-input" accept="image/*" multiple hidden>
+
+      <div id="results-section">
+        <h2>Your files</h2>
+        <div id="results"></div>
+      </div>
+    </section>
+
+    <section class="content">
+      <p>Modern phone photos run 4–12 MB each — three attachments and Gmail refuses to send. This preset resizes to 2048 px (plenty for viewing on any screen) at ~500 KB each, so a dozen photos travel in one email. Drop them all at once; each is compressed in your browser.</p>
+
+      <h2>How it works</h2>
+      <ol>
+        <li><strong>Check the target.</strong> This page is preset for the spec above — adjust any number to match your exact form.</li>
+        <li><strong>Drop your photo.</strong> ExactKB finds the best quality and dimensions that land inside the size window — including padding files up when a form has a minimum size.</li>
+        <li><strong>Download.</strong> The file fits the requirement on the first try.</li>
+      </ol>
+
+      <h2>FAQ</h2>
+      <p class="faq-q">Will the recipient notice quality loss?</p>
+      <p>On screen, no — 2048 px at high JPEG quality looks identical in an email client. For print-quality originals, send full files via a link instead.</p>
+      <p class="faq-q">Is my photo uploaded to a server?</p>
+      <p>No. ExactKB runs entirely in your browser. Your file never leaves your device — this page even works offline.</p>
+
+      <h2>More tools</h2>
+      <div class="related">
+        <a href="../compress-image-to-10kb/">Compress an image to 10 KB</a>
+        <a href="../compress-image-to-20kb/">Compress an image to 20 KB</a>
+        <a href="../compress-image-to-50kb/">Compress an image to 50 KB</a>
+        <a href="../compress-image-to-100kb/">Compress an image to 100 KB</a>
+        <a href="../compress-image-to-200kb/">Compress an image to 200 KB</a>
+        <a href="../compress-jpeg-to-10kb/">Compress a JPEG to 10 KB</a>
+        <a href="../increase-image-size-to-20kb/">Increase an image's file size to meet a minimum KB</a>
+        <a href="../ssc-photo-signature-resize/">SSC photo & signature resizer</a>
+        <a href="../">All presets →</a>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      ExactKB — free exact-size image compression · <a href="../">Home</a> · Files are processed on your device and never uploaded. © <span id="year"></span>
+    </div>
+  </footer>
+
+  <script>window.PAGE_PRESET = {"id": "custom", "country": "global", "minKB": null, "maxKB": 500, "width": 2048, "height": null, "format": "jpeg"};</script>
+  <script src="../presets.js"></script>
+  <script src="../app.js"></script>
+</body>
+</html>

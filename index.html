@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ExactKB — Compress Images to an Exact KB Size, Free &amp; Private</title>
+  <meta name="description" content="Compress and resize any photo to the exact KB size an upload form demands — 20KB, 50KB, 200KB, anything. Country-specific presets for visa, passport and exam portals. 100% in your browser, files never uploaded.">
+  <link rel="canonical" href="https://suncal.github.io/exactkb/">
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🎯</text></svg>">
+  <meta property="og:title" content="ExactKB — Compress Images to an Exact KB Size">
+  <meta property="og:description" content="Fit any photo to the exact size an upload form demands. Free, private, in-browser.">
+  <meta property="og:type" content="website">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "ExactKB",
+    "applicationCategory": "UtilitiesApplication",
+    "operatingSystem": "Any",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+    "description": "Compress and resize images to an exact KB size for upload forms, with country-specific presets for visa, passport, and exam portals. Runs entirely in the browser."
+  }
+  </script>
+</head>
+<body>
+  <header>
+    <div class="wrap header-inner">
+      <a class="logo" href="./">Exact<span>KB</span> 🎯</a>
+      <div class="trust">100% in your browser — files never leave your device</div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="hero">
+      <h1>Compress any photo to the <em>exact</em> KB size the form demands</h1>
+      <p class="sub">"Photo must be 20–50 KB." "Max 240 KB." "Between 10 and 20 KB." Stop guessing and retrying — drop your image, set the target, download a file that fits on the first try.</p>
+      <div class="badges">
+        <span class="badge">✓ Exact-size targeting</span>
+        <span class="badge">✓ Country presets — visa, passport, exams</span>
+        <span class="badge">🔒 Never uploaded — works offline</span>
+        <span class="badge">Free, no signup</span>
+      </div>
+    </section>
+
+    <section class="tool" id="tool">
+      <div class="controls">
+        <div class="field">
+          <label for="country">Country / region</label>
+          <select id="country" aria-label="Country or region"></select>
+        </div>
+        <div class="field">
+          <label for="preset">Preset (portal / document)</label>
+          <select id="preset" aria-label="Document preset"></select>
+        </div>
+        <div class="size-row">
+          <div class="field">
+            <label for="min-kb">Min size (KB, optional)</label>
+            <input type="number" id="min-kb" min="1" placeholder="e.g. 20">
+          </div>
+          <div class="field">
+            <label for="max-kb">Max size (KB) *</label>
+            <input type="number" id="max-kb" min="1" placeholder="e.g. 50" value="100">
+          </div>
+          <div class="field">
+            <label for="out-width">Width px (optional)</label>
+            <input type="number" id="out-width" min="16" placeholder="auto">
+          </div>
+          <div class="field">
+            <label for="out-height">Height px (optional)</label>
+            <input type="number" id="out-height" min="16" placeholder="auto">
+          </div>
+        </div>
+        <div class="field">
+          <label for="out-format">Output format</label>
+          <select id="out-format">
+            <option value="jpeg" selected>JPG (recommended — smallest)</option>
+            <option value="png">PNG</option>
+          </select>
+        </div>
+        <p id="preset-note"></p>
+      </div>
+
+      <div class="drop" id="drop" role="button" tabindex="0" aria-label="Choose or drop images">
+        <div class="big">📸</div>
+        <div class="main">Drop images here, paste, or click to choose</div>
+        <div class="hint">JPG, PNG, WebP, GIF, BMP · multiple files OK · nothing is uploaded</div>
+      </div>
+      <input type="file" id="file-input" accept="image/*" multiple hidden>
+
+      <div id="results-section">
+        <h2>Your files</h2>
+        <div id="results"></div>
+      </div>
+    </section>
+
+    <section class="content">
+      <h2>How it works</h2>
+      <ol>
+        <li><strong>Pick your target.</strong> Choose a country preset (US visa, UK passport, SSC exam, Schengen…) or type the exact KB limit from the form you're filling.</li>
+        <li><strong>Drop your photo.</strong> ExactKB finds the best quality and dimensions that land <em>inside</em> your size window — including padding files <em>up</em> when a form has a minimum size.</li>
+        <li><strong>Download.</strong> The file fits the requirement on the first try. Done.</li>
+      </ol>
+
+      <h2>Why ExactKB instead of a normal compressor?</h2>
+      <p>Ordinary compressors shrink your image to <em>some</em> smaller size and let you retry until it fits. ExactKB targets the requirement itself: max-only limits ("under 240 KB"), windows ("20–50 KB"), exact pixel dimensions (600×600), and even minimum sizes — some government forms reject files for being <em>too small</em>, and ExactKB pads them into range with valid JPEG metadata.</p>
+      <p>And it's private by construction: everything runs in your browser. Your passport photo, signature, and documents are never sent to a server — you can load this page, turn off the internet, and it still works.</p>
+
+      <h2>Popular targets</h2>
+      <div class="related" id="related-links">
+        <a href="compress-image-to-20kb/">Compress to 20 KB</a>
+        <a href="compress-image-to-50kb/">Compress to 50 KB</a>
+        <a href="compress-image-to-100kb/">Compress to 100 KB</a>
+        <a href="compress-image-to-200kb/">Compress to 200 KB</a>
+        <a href="increase-image-size-to-20kb/">Increase size to 20 KB</a>
+        <a href="us-visa-photo-240kb/">US visa photo (240 KB)</a>
+        <a href="dv-lottery-photo-600x600/">DV Lottery photo</a>
+        <a href="uk-passport-photo-digital/">UK passport photo</a>
+        <a href="schengen-visa-photo-size/">Schengen visa photo</a>
+        <a href="ssc-photo-signature-resize/">SSC photo &amp; signature</a>
+        <a href="ibps-photo-signature-resize/">IBPS photo &amp; signature</a>
+        <a href="upsc-photo-resize/">UPSC photo</a>
+        <a href="neet-photo-signature-resize/">NEET photo &amp; signature</a>
+        <a href="pan-card-photo-resize/">PAN card photo</a>
+        <a href="whatsapp-dp-resize/">WhatsApp DP 640×640</a>
+        <a href="compress-image-for-email/">Email attachment</a>
+        <a href="compress-image-for-discord/">Discord upload</a>
+        <a href="linkedin-photo-resize/">LinkedIn photo</a>
+        <a href="canada-visa-photo-420x540/">Canada visa photo</a>
+        <a href="compress-jpeg-to-10kb/">Compress JPEG to 10 KB</a>
+      </div>
+
+      <h2>FAQ</h2>
+      <p class="faq-q">Is my photo uploaded to a server?</p>
+      <p>No. ExactKB runs entirely in your browser using its built-in image engine. Nothing ever leaves your device — this page works even offline.</p>
+      <p class="faq-q">The form wants a minimum size too (e.g. "20–50 KB"). Can you handle that?</p>
+      <p>Yes — that's ExactKB's specialty. If your file compresses below the minimum, ExactKB grows it back into the window using valid JPEG metadata so the portal accepts it.</p>
+      <p class="faq-q">Are the country presets guaranteed to be current?</p>
+      <p>Presets reflect each portal's commonly published spec, but governments change requirements — always verify the numbers against the latest official notification, which every preset links to in its note.</p>
+      <p class="faq-q">Does it work on my phone?</p>
+      <p>Yes. Any modern phone or computer browser works — no app to install.</p>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      ExactKB — free exact-size image compression · <a href="./">Home</a> · Files are processed on your device and never uploaded. © <span id="year"></span>
+    </div>
+  </footer>
+
+  <script src="presets.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
