@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "exactkb",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["-m", "http.server", "4457", "--directory", "/Users/priyankarchakraborty/Trading/exactkb"],
+      "port": 4457
+    }
+  ]
+}

@@ -438,7 +438,7 @@ def render_pdf(slug, p):
   <title>{html.escape(p["title"])}</title>
   <meta name="description" content="{html.escape(p["desc"])}">
   <link rel="canonical" href="{BASE_URL}/{slug}/">
-  <link rel="stylesheet" href="../style.css?v=10">
+  <link rel="stylesheet" href="../style.css?v=11">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🎯</text></svg>">
   <meta property="og:title" content="{html.escape(p["title"])}">
   <meta property="og:description" content="{html.escape(p["desc"])}">
@@ -511,7 +511,292 @@ def render_pdf(slug, p):
   </footer>
 
   <script>window.PDF_PRESET = {preset_json};</script>
-  <script src="../pdf-app.js?v=10"></script>
+  <script src="../pdf-app.js?v=11"></script>
+</body>
+</html>
+"""
+
+
+# ---------- Request Kits (official) ----------
+# slot schema: n=name, min/max=KB, w/h=px, f=format(jpeg default), dpi, note
+KITS = {
+    "ibps-application-kit": {
+        "flag": "🇮🇳", "name": "IBPS / SBI Application Kit",
+        "title": "IBPS / SBI Application Kit — All 4 Files to Exact Spec",
+        "desc": "Prepare all four IBPS/SBI upload files in one place — photo, signature, thumb impression and handwritten declaration, each fitted to the exact spec and bundled as a ZIP.",
+        "sub": "All four bank-recruitment uploads, each fitted to its exact published spec, bundled in one correctly-named ZIP.",
+        "kit": {"t": "IBPS / SBI Application", "s": [
+            {"n": "Photograph", "min": 20, "max": 50, "w": 200, "h": 230, "note": "Recent passport-style photo, light background."},
+            {"n": "Signature", "min": 10, "max": 20, "w": 140, "h": 60, "note": "Black ink on white paper."},
+            {"n": "Left thumb impression", "min": 20, "max": 50, "w": 240, "h": 240, "note": "Blue/black ink on white paper."},
+            {"n": "Handwritten declaration", "min": 50, "max": 100, "w": 800, "h": 400, "note": "The declaration text from your notification, handwritten."},
+        ]},
+        "intro": "Bank recruitment portals (IBPS PO/Clerk/SO, SBI, RRB) require four separately-specced uploads and reject each one independently. This kit fits all four on the first try. Verify specs against your notification's annexure.",
+    },
+    "ssc-application-kit": {
+        "flag": "🇮🇳", "name": "SSC Application Kit",
+        "title": "SSC Application Kit — Photo & Signature to Exact Spec",
+        "desc": "SSC CGL/CHSL/MTS photo (20–50 KB, 200×230) and signature (10–20 KB, 140×60) prepared together and bundled as a ZIP.",
+        "sub": "The standard SSC photo and signature, fitted together, downloaded as one bundle.",
+        "kit": {"t": "SSC Application", "s": [
+            {"n": "Photograph", "min": 20, "max": 50, "w": 200, "h": 230},
+            {"n": "Signature", "min": 10, "max": 20, "w": 140, "h": 60},
+        ]},
+        "intro": "SSC portals validate both the KB window and pixel dimensions on each file. Prepare both here, download the bundle, upload once. Verify against your exam cycle's notification.",
+    },
+    "neet-application-kit": {
+        "flag": "🇮🇳", "name": "NEET Application Kit",
+        "title": "NEET Application Kit — Photo & Signature (NTA Spec)",
+        "desc": "NEET passport photo (10–200 KB) and signature (4–30 KB) fitted to NTA's spec together.",
+        "sub": "NTA's photo and signature windows, handled in one place.",
+        "kit": {"t": "NEET Application", "s": [
+            {"n": "Passport photo", "min": 10, "max": 200, "note": "Recent, white background, 80% face."},
+            {"n": "Signature", "min": 4, "max": 30, "note": "Black ink on white paper."},
+        ]},
+        "intro": "NTA's application takes a passport-size photo between 10 and 200 KB and a signature between 4 and 30 KB, both JPG. Some cycles also ask for a postcard-size photo — add it with the kit builder if yours does.",
+    },
+    "upsc-application-kit": {
+        "flag": "🇮🇳", "name": "UPSC OTR Kit",
+        "title": "UPSC OTR Kit — Photo & Signature (20–300 KB)",
+        "desc": "UPSC One-Time Registration photo and signature, both fitted to the 20–300 KB JPG window.",
+        "sub": "Both OTR files fitted to the 20–300 KB window in one pass.",
+        "kit": {"t": "UPSC OTR", "s": [
+            {"n": "Photograph", "min": 20, "max": 300, "note": "Recent photo; check your notification for name/date requirements."},
+            {"n": "Signature", "min": 20, "max": 300},
+        ]},
+        "intro": "UPSC's One-Time Registration accepts JPGs from 20 KB to 300 KB for both photo and signature. Read your notification's photo instructions carefully — content rules apply beyond file size.",
+    },
+    "us-visa-ds160-kit": {
+        "flag": "🇺🇸", "name": "US Visa (DS-160) Kit",
+        "title": "US Visa DS-160 Photo Kit — 600×600 Under 240 KB",
+        "desc": "Your DS-160 digital photo at the State Department's exact spec: square 600×600 JPEG under 240 KB at 300 DPI.",
+        "sub": "The State Department's digital photo spec, produced exactly.",
+        "kit": {"t": "US Visa DS-160", "s": [
+            {"n": "Visa photo", "max": 240, "w": 600, "h": 600, "dpi": 300, "note": "Plain white background, full face, no glasses. Verify at travel.state.gov."},
+        ]},
+        "intro": "The DS-160 photo tool wants a square JPEG, 600×600 px minimum, no larger than 240 KB. This kit crops, fits and stamps 300 DPI in one step — content rules (background, expression, glasses) are yours to check.",
+    },
+    "dv-lottery-kit": {
+        "flag": "🇺🇸", "name": "DV Lottery Kit",
+        "title": "DV Lottery (Green Card) Photo Kit — Exact E-DV Spec",
+        "desc": "Green Card lottery photos for the whole family — each exactly 600×600 JPEG under 240 KB.",
+        "sub": "One slot per family member — every E-DV entry photo needs its own compliant file.",
+        "kit": {"t": "DV Lottery Entry", "s": [
+            {"n": "Primary applicant photo", "max": 240, "w": 600, "h": 600, "dpi": 300, "note": "Recent, neutral expression, plain background, no glasses."},
+            {"n": "Spouse photo", "max": 240, "w": 600, "h": 600, "dpi": 300, "note": "Required if married — same rules."},
+            {"n": "Child photo", "max": 240, "w": 600, "h": 600, "dpi": 300, "note": "One per child — rerun this slot for each."},
+        ]},
+        "intro": "Every October, entries are disqualified over photo technicalities — and you only get one entry per year. Each family member on your entry needs their own compliant photo. Verify at dvprogram.state.gov.",
+    },
+    "uk-passport-kit": {
+        "flag": "🇬🇧", "name": "UK Passport Kit",
+        "title": "UK Passport Digital Photo Kit — GOV.UK Spec",
+        "desc": "Your GOV.UK digital passport photo at 750×950 px, between 50 KB and 10 MB.",
+        "sub": "GOV.UK's unusual spec — including the 50 KB minimum — handled exactly.",
+        "kit": {"t": "UK Passport", "s": [
+            {"n": "Digital passport photo", "min": 50, "max": 10000, "w": 750, "h": 950, "dpi": 300, "note": "Plain light background, no shadows. Someone else should take it — no selfies."},
+        ]},
+        "intro": "GOV.UK's online service takes a digital photo of at least 750×950 pixels, between 50 KB and 10 MB — the minimum trips people up, and this kit respects both bounds.",
+    },
+    "bd-govt-job-kit": {
+        "flag": "🇧🇩", "name": "BD Govt Job Kit",
+        "title": "Bangladesh Govt Job Kit — Teletalk Photo & Signature",
+        "desc": "The standard Teletalk pair: 300×300 photo under 100 KB and 300×80 signature under 60 KB, bundled.",
+        "sub": "The Teletalk standard used across ministries, both files at once.",
+        "kit": {"t": "BD Govt Job Application", "s": [
+            {"n": "Photograph", "max": 100, "w": 300, "h": 300},
+            {"n": "Signature", "max": 60, "w": 300, "h": 80},
+        ]},
+        "intro": "Almost every Bangladesh government job application runs through Teletalk's portal with the same two specs. Verify your specific circular's annexure.",
+    },
+    "jamb-registration-kit": {
+        "flag": "🇳🇬", "name": "JAMB Registration Kit",
+        "title": "JAMB Registration Kit — Passport Photo Under 50 KB",
+        "desc": "Your JAMB registration photo compressed under 50 KB, ready before you reach the café.",
+        "sub": "Under 50 KB, first try — no paid retries at the cyber café.",
+        "kit": {"t": "JAMB Registration", "s": [
+            {"n": "Passport photo", "max": 50, "note": "White or light background, no caps or glasses. Verify at jamb.gov.ng."},
+        ]},
+        "intro": "JAMB rejects oversized photos and café queues charge for every retry. Prepare the file on your own phone first, free.",
+    },
+}
+
+
+def render_kit(slug, k):
+    kit_json = json.dumps(k["kit"])
+    others = [s for s in KITS if s != slug][:6]
+    related_html = "\n        ".join(
+        f'<a href="../{s}/">{KITS[s]["name"]}</a>' for s in others
+    )
+    return f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{html.escape(k["title"])}</title>
+  <meta name="description" content="{html.escape(k["desc"])}">
+  <link rel="canonical" href="{BASE_URL}/{slug}/">
+  <link rel="stylesheet" href="../style.css?v=11">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🎯</text></svg>">
+  <meta property="og:title" content="{html.escape(k["title"])}">
+  <meta property="og:description" content="{html.escape(k["desc"])}">
+  <meta property="og:type" content="website">
+</head>
+<body>
+  <header>
+    <div class="wrap header-inner">
+      <a class="logo" href="../"><span class="logo-mark">🎯</span>Exact<span>KB</span></a>
+      <nav class="nav">
+        <a href="../">Images</a>
+        <a href="../compress-pdf/">PDF</a>
+        <a href="../kits/">Kits</a>
+        <a class="nav-cta" href="#tool">Start</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="hero">
+      <div class="eyebrow">{k["flag"]} Official Request Kit</div>
+      <h1>{html.escape(k["name"])}</h1>
+      <p class="sub">{k["sub"]}</p>
+    </section>
+
+    <section class="tool" id="tool">
+      <div id="kit-root"></div>
+    </section>
+
+    <section class="content">
+      <p>{k["intro"]}</p>
+      <p>Everything runs in your browser — your photos and documents are never uploaded to any server. Requirements change between cycles: always verify against the latest official notification. ExactKB is not affiliated with any government agency or portal.</p>
+
+      <h2>More kits</h2>
+      <div class="related">
+        {related_html}
+        <a href="../kits/">All kits</a>
+        <a href="../build-kit/">Build your own →</a>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <div class="footer-bottom">
+        <div>© <span id="year"></span> ExactKB · <a href="../">Home</a> · <a href="../kits/">Kits</a> · <a href="../privacy/">Privacy</a> · <a href="../terms/">Terms</a> · Files are processed on your device and never uploaded. Not affiliated with any government agency or portal.</div>
+      </div>
+    </div>
+  </footer>
+
+  <script>window.KIT_DATA = {kit_json};</script>
+  <script src="../app.js?v=11"></script>
+  <script src="../kit-app.js?v=11"></script>
+</body>
+</html>
+"""
+
+
+def render_kit_opener():
+    """Generic /kit/ page — renders whatever kit is encoded in the URL fragment."""
+    return """<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Request Kit — ExactKB</title>
+  <meta name="description" content="Someone sent you a file-requirement kit. Drop your files — each comes out fitted to the exact requirement, on your device, never uploaded.">
+  <link rel="canonical" href="https://suncal.github.io/exactkb/kit/">
+  <link rel="stylesheet" href="../style.css?v=11">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🎯</text></svg>">
+  <meta name="robots" content="noindex, follow">
+</head>
+<body>
+  <header>
+    <div class="wrap header-inner">
+      <a class="logo" href="../"><span class="logo-mark">🎯</span>Exact<span>KB</span></a>
+      <div class="trust">100% in your browser — files never leave your device</div>
+    </div>
+  </header>
+  <main class="wrap">
+    <section class="hero">
+      <div class="eyebrow">🔗 You've been sent a Request Kit</div>
+      <h1>Drop your files — they'll come out <em>exactly right</em></h1>
+      <p class="sub">Each file below is fitted to the sender's exact requirement, on your device. Nothing is uploaded anywhere.</p>
+    </section>
+    <section class="tool" id="tool">
+      <div id="kit-root"></div>
+    </section>
+    <section class="content">
+      <p>Request Kits are made with <a href="../build-kit/">ExactKB's free kit builder</a> — the whole requirement is encoded in the link, with no server and no account. <a href="../kits/">Browse official kits</a> for major exams and visa applications.</p>
+    </section>
+  </main>
+  <footer>
+    <div class="wrap">
+      <div class="footer-bottom">
+        <div>© <span id="year"></span> ExactKB · <a href="../">Home</a> · <a href="../kits/">Kits</a> · <a href="../privacy/">Privacy</a> · <a href="../terms/">Terms</a> · Files are processed on your device and never uploaded.</div>
+      </div>
+    </div>
+  </footer>
+  <script src="../app.js?v=11"></script>
+  <script src="../kit-app.js?v=11"></script>
+</body>
+</html>
+"""
+
+
+def render_kits_directory():
+    cards = "\n        ".join(
+        f'<a class="kit-card" href="../{slug}/"><span class="flag">{k["flag"]}</span><h3>{html.escape(k["name"])}</h3><p>{html.escape(k["sub"])}</p></a>'
+        for slug, k in KITS.items()
+    )
+    return f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Request Kit Library — Exam & Visa Document Kits | ExactKB</title>
+  <meta name="description" content="Ready-made document kits for major applications — IBPS, SSC, NEET, UPSC, US visa DS-160, DV Lottery, UK passport and more. Every file fitted to spec, bundled as a ZIP, fully private.">
+  <link rel="canonical" href="{BASE_URL}/kits/">
+  <link rel="stylesheet" href="../style.css?v=11">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🎯</text></svg>">
+  <meta property="og:title" content="Request Kit Library — Exam &amp; Visa Document Kits">
+  <meta property="og:description" content="Every file fitted to spec, bundled as a ZIP, fully private.">
+  <meta property="og:type" content="website">
+</head>
+<body>
+  <header>
+    <div class="wrap header-inner">
+      <a class="logo" href="../"><span class="logo-mark">🎯</span>Exact<span>KB</span></a>
+      <nav class="nav">
+        <a href="../">Images</a>
+        <a href="../compress-pdf/">PDF</a>
+        <a href="../clean-document/">Doc Cleaner</a>
+        <a class="nav-cta" href="../build-kit/">Build a kit</a>
+      </nav>
+    </div>
+  </header>
+  <main class="wrap">
+    <section class="hero">
+      <div class="eyebrow">📦 The Kit Library</div>
+      <h1>Every file an application needs, <em>fitted in one place</em></h1>
+      <p class="sub">Pick your application — each kit prepares every required file to its exact published spec and bundles them, correctly named, in one ZIP. All on your device.</p>
+    </section>
+    <div class="kits-grid">
+        {cards}
+        <a class="kit-card" href="../build-kit/"><span class="flag">➕</span><h3>Build your own kit</h3><p>Create a shareable requirement link for anything — classmates, clients, family.</p></a>
+    </div>
+    <section class="content">
+      <h2>What's a Request Kit?</h2>
+      <p>A kit is a checklist of exact file requirements packed into a link. Open one, drop your files, and each comes out fitted to its spec — size window, dimensions, format, even print DPI — processed entirely in your browser. Coaching centres, consultants and HR teams can <a href="../build-kit/">build their own kits</a> and send one link instead of an instruction sheet.</p>
+    </section>
+  </main>
+  <footer>
+    <div class="wrap">
+      <div class="footer-bottom">
+        <div>© <span id="year"></span> ExactKB · <a href="../">Home</a> · <a href="../privacy/">Privacy</a> · <a href="../terms/">Terms</a> · Files are processed on your device and never uploaded. Not affiliated with any government agency or portal.</div>
+      </div>
+    </div>
+  </footer>
+  <script>document.getElementById("year").textContent = new Date().getFullYear();</script>
 </body>
 </html>
 """
@@ -535,7 +820,7 @@ def render(slug, p):
   <title>{html.escape(p["title"])}</title>
   <meta name="description" content="{html.escape(p["desc"])}">
   <link rel="canonical" href="{BASE_URL}/{slug}/">
-  <link rel="stylesheet" href="../style.css?v=10">
+  <link rel="stylesheet" href="../style.css?v=11">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🎯</text></svg>">
   <meta property="og:title" content="{html.escape(p["title"])}">
   <meta property="og:description" content="{html.escape(p["desc"])}">
@@ -654,8 +939,8 @@ def render(slug, p):
   </footer>
 
   <script>window.PAGE_PRESET = {preset_json};</script>
-  <script src="../presets.js?v=10"></script>
-  <script src="../app.js?v=10"></script>
+  <script src="../presets.js?v=11"></script>
+  <script src="../app.js?v=11"></script>
 </body>
 </html>
 """
@@ -675,8 +960,23 @@ def main():
         with open(os.path.join(outdir, "index.html"), "w") as f:
             f.write(render_pdf(slug, p))
         urls.append(f"{BASE_URL}/{slug}/")
+    # Request Kits: official kit pages + directory + generic opener
+    for slug, k in KITS.items():
+        outdir = os.path.join(ROOT, slug)
+        os.makedirs(outdir, exist_ok=True)
+        with open(os.path.join(outdir, "index.html"), "w") as f:
+            f.write(render_kit(slug, k))
+        urls.append(f"{BASE_URL}/{slug}/")
+    os.makedirs(os.path.join(ROOT, "kits"), exist_ok=True)
+    with open(os.path.join(ROOT, "kits", "index.html"), "w") as f:
+        f.write(render_kits_directory())
+    urls.append(f"{BASE_URL}/kits/")
+    os.makedirs(os.path.join(ROOT, "kit"), exist_ok=True)
+    with open(os.path.join(ROOT, "kit", "index.html"), "w") as f:
+        f.write(render_kit_opener())
     # hand-authored tool pages (not generated, but belong in the sitemap)
     urls.append(f"{BASE_URL}/clean-document/")
+    urls.append(f"{BASE_URL}/build-kit/")
     with open(os.path.join(ROOT, "sitemap.xml"), "w") as f:
         f.write('<?xml version="1.0" encoding="UTF-8"?>\n')
         f.write('<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n')

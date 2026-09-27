@@ -363,6 +363,74 @@ header {
 }
 @media (max-width: 640px) { .compare-grid { grid-template-columns: 1fr; } }
 
+/* ---------- Request Kits ---------- */
+.kit-head { margin-bottom: 18px; }
+.kit-title { font-size: 1.3rem; font-weight: 800; letter-spacing: -0.02em; }
+.kit-sub { font-size: 0.86rem; color: var(--muted-solid); margin-top: 4px; }
+.kit-slots { display: flex; flex-direction: column; gap: 12px; }
+.kit-slot {
+  display: flex; align-items: flex-start; gap: 14px;
+  background: var(--bg); border: 1px solid var(--line); border-radius: 14px;
+  padding: 16px; transition: border-color 0.15s;
+}
+.kit-slot.over { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 5%, transparent); }
+.kit-slot.ok { border-color: color-mix(in srgb, var(--ok) 45%, var(--line)); }
+.kit-slot.failed { border-color: color-mix(in srgb, var(--warn) 50%, var(--line)); }
+.kit-slot-num {
+  width: 30px; height: 30px; flex: 0 0 30px; border-radius: 9px;
+  display: flex; align-items: center; justify-content: center;
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent) 25%, transparent);
+  color: var(--accent); font-weight: 800; font-size: 0.85rem;
+}
+.kit-slot.ok .kit-slot-num { background: color-mix(in srgb, var(--ok) 12%, transparent); border-color: color-mix(in srgb, var(--ok) 35%, transparent); color: var(--ok); }
+.kit-slot-body { flex: 1; min-width: 0; }
+.kit-slot-name { font-weight: 700; font-size: 0.98rem; letter-spacing: -0.01em; }
+.kit-slot-spec { font-size: 0.8rem; color: var(--accent); font-weight: 600; margin-top: 2px; font-variant-numeric: tabular-nums; }
+.kit-slot-note { font-size: 0.8rem; color: var(--muted-solid); margin-top: 4px; }
+.kit-slot-status { display: none; font-size: 0.84rem; margin-top: 8px; color: var(--muted-solid); }
+.kit-slot.ok .kit-slot-status { color: var(--ok); font-weight: 600; }
+.kit-slot.failed .kit-slot-status { color: var(--warn); }
+.kit-slot-status a { color: var(--accent); }
+.kit-slot-action { flex: 0 0 auto; }
+.kit-choose {
+  padding: 9px 16px; border-radius: 10px; font-weight: 700; font-size: 0.84rem;
+  border: 1px solid var(--line); background: var(--card); color: var(--text);
+  cursor: pointer; font-family: inherit; transition: border-color 0.12s;
+}
+.kit-choose:hover { border-color: var(--accent); color: var(--accent); }
+.kit-bundle { margin-top: 18px; }
+.kit-progress {
+  font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;
+  color: var(--muted-solid); margin-bottom: 8px; text-align: center;
+}
+.kit-error { text-align: center; padding: 30px 10px; color: var(--muted-solid); }
+.kit-error a { color: var(--accent); }
+
+/* builder rows */
+.kb-row { display: flex; align-items: flex-start; gap: 10px; background: var(--bg); border: 1px solid var(--line); border-radius: 12px; padding: 14px; margin-bottom: 10px; }
+.kb-grid { flex: 1; display: grid; grid-template-columns: 1.4fr 1.6fr repeat(4, 0.7fr) 0.8fr; gap: 10px; }
+.kb-row .kb-remove { margin-top: 22px; }
+@media (max-width: 900px) { .kb-grid { grid-template-columns: 1fr 1fr; } }
+
+/* kits directory */
+.kits-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 26px; }
+.kit-card {
+  display: block; text-decoration: none; color: var(--text);
+  background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 20px; box-shadow: var(--shadow-sm); transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+}
+.kit-card:hover { transform: translateY(-3px); box-shadow: var(--shadow); border-color: color-mix(in srgb, var(--accent) 35%, var(--line)); }
+.kit-card .flag { font-size: 1.3rem; }
+.kit-card h3 { font-size: 0.98rem; font-weight: 700; margin: 8px 0 4px; letter-spacing: -0.01em; }
+.kit-card p { font-size: 0.8rem; color: var(--muted-solid); }
+@media (max-width: 820px) { .kits-grid { grid-template-columns: 1fr; } }
+
+/* embed mode */
+body.embed header, body.embed .hero, body.embed .content, body.embed footer, body.embed .features, body.embed .steps { display: none; }
+body.embed .tool { margin: 8px auto; padding: 16px; box-shadow: none; }
+body.embed .tool::before { display: none; }
+
 .spinner {
   width: 22px; height: 22px; border-radius: 50%;
   border: 3px solid var(--line); border-top-color: var(--accent);

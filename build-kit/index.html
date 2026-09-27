@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Build a Request Kit — Share Exact File Requirements, Free</title>
+  <meta name="description" content="Create a shareable link that asks people for exactly the files you need — photo 20–50 KB, signature 140×60, anything. They open it, drop their files, and everything comes out fitted to spec. No accounts, no uploads.">
+  <link rel="canonical" href="https://suncal.github.io/exactkb/build-kit/">
+  <link rel="stylesheet" href="../style.css?v=11">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🎯</text></svg>">
+  <meta property="og:title" content="Build a Request Kit — Share Exact File Requirements">
+  <meta property="og:description" content="Send a link that IS the instructions. Recipients drop files; everything comes out fitted to your spec.">
+  <meta property="og:type" content="website">
+</head>
+<body>
+  <header>
+    <div class="wrap header-inner">
+      <a class="logo" href="../"><span class="logo-mark">🎯</span>Exact<span>KB</span></a>
+      <nav class="nav">
+        <a href="../">Images</a>
+        <a href="../compress-pdf/">PDF</a>
+        <a href="../kits/">Kits</a>
+        <a class="nav-cta" href="#tool">Build a kit</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="hero">
+      <div class="eyebrow">🔗 Send the solution, not the instructions</div>
+      <h1>Build a <em>Request Kit</em> — a link that collects files to your exact spec</h1>
+      <p class="sub">Need documents from applicants, students, clients, or family? Instead of explaining "photo must be 20–50 KB…", send one link. They open it, drop their files, and every file comes out fitted to your requirements — named correctly, bundled in one ZIP.</p>
+    </section>
+
+    <section class="tool" id="tool">
+      <div id="kit-builder">
+        <div class="step-label"><span class="n">1</span> Name your kit</div>
+        <div class="field full" style="margin-bottom:18px">
+          <label for="kb-title">Kit title</label>
+          <input type="text" id="kb-title" placeholder="e.g. IBPS PO Application — Documents" maxlength="80">
+        </div>
+
+        <div class="step-label"><span class="n">2</span> Add the files you need</div>
+        <div id="kb-rows"></div>
+        <button class="btn-zip" id="kb-add" type="button" style="display:inline-block;margin:4px 0 18px">+ Add another file</button>
+
+        <div class="step-label"><span class="n">3</span> Get your link</div>
+        <button class="btn-go" id="kb-generate" type="button">Create kit link →</button>
+
+        <div id="kb-output" style="display:none">
+          <div class="share-row" style="margin-top:18px">
+            <input class="share-url" id="kb-link" readonly>
+            <button class="btn btn-download" id="kb-copy" type="button">Copy link</button>
+          </div>
+          <p class="share-sub" style="margin-top:10px">Anyone with this link sees your checklist and gets correctly-fitted files — nothing is uploaded to any server, and the link never expires. <a id="kb-open" href="#" target="_blank" rel="noopener">Open your kit ↗</a></p>
+          <div class="share-qr" id="kb-qr"></div>
+          <div class="field full" style="margin-top:16px">
+            <label for="kb-embed">Embed on your website</label>
+            <textarea class="share-url" id="kb-embed" rows="3" readonly style="width:100%;resize:vertical;font-size:0.78rem"></textarea>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="content">
+      <h2>Who uses Request Kits</h2>
+      <ul>
+        <li><strong>Coaching centres &amp; consultants</strong> — send every student the exam's exact photo/signature kit instead of a printed instruction sheet.</li>
+        <li><strong>HR &amp; admissions</strong> — collect compliant documents on the first try, not the third.</li>
+        <li><strong>Families</strong> — build the kit once, send it to a parent; they tap, drop, done.</li>
+        <li><strong>Website owners</strong> — embed a kit directly on your page with the iframe snippet.</li>
+      </ul>
+
+      <h2>How it works — and why it's private</h2>
+      <p>The entire kit — every requirement you set — is encoded inside the link itself. There is no server, no database, and no account. When someone opens your kit, their files are processed inside their own browser and never uploaded anywhere. You're not collecting files; you're making sure the files they submit (to the portal, to you by email, anywhere) are right the first time.</p>
+
+      <h2>Official kits</h2>
+      <p>We maintain ready-made kits for major applications — <a href="../kits/">browse the kit library</a> for IBPS, SSC, NEET, UPSC, US visa (DS-160), DV Lottery and more.</p>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <div class="footer-bottom">
+        <div>© <span id="year"></span> ExactKB · <a href="../">Home</a> · <a href="../kits/">Kits</a> · <a href="../privacy/">Privacy</a> · <a href="../terms/">Terms</a> · Files are processed on your device and never uploaded. Not affiliated with any government agency or portal.</div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../presets.js?v=11"></script>
+  <script src="../app.js?v=11"></script>
+  <script src="../kit-app.js?v=11"></script>
+</body>
+</html>

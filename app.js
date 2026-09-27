@@ -891,6 +891,15 @@
     };
   }
 
+  // Shared engine for other ExactKB pages (Request Kits, etc.)
+  window.ExactKBEngine = {
+    compressToTarget,
+    buildZip,
+    fmtKB,
+    stampJpegDpi,
+    loadScriptOnce,
+  };
+
   // ---------- init ----------
   document.addEventListener("DOMContentLoaded", () => {
     populatePresets();
